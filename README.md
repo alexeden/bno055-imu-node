@@ -1,14 +1,4 @@
-# Node Remote Repo Template
-
-## Clone the repo
-
-Since this is a template, you'll wanna add some flags to your clone command so that you can get the repo without all of its commit history and emotional baggage:
-
-```
-$ git clone --depth=1 https://github.com/alexeden/node-remote-repo-template.git <your new repo's name>
-$ rm -rf !$/.git
-```
-
+# BNO-series IMU
 
 ## Workflow
 
