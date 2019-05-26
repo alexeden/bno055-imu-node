@@ -1,5 +1,6 @@
 import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
 import { I2cHelper } from './i2c-helper';
+import { CalibrationStatus } from './types';
 
 export class BNO050 {
 
@@ -70,5 +71,23 @@ export class BNO050 {
     await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, usextal ? 0x80 : 0x00);
     /* Set the requested operating mode (see section 3.3) */
     await this.setMode(savedMode);
+  }
+
+  /**
+   *  sys   Current system calibration status, depends on status of all sensors, read-only
+   *  gyro  Current calibration status of Gyroscope, read-only
+   *  accel Current calibration status of Accelerometer, read-only
+   *  mag   Current calibration status of Magnetometer, read-only
+   */
+  async getCalibration(): Promise<CalibrationStatus> {
+    const calData = await this.bus.readByte(Reg.CALIB_STAT_ADDR);
+    console.log('calibration byte: ', calData);
+
+    return {
+      sys: (calData >> 6) & 0x03,
+      gyro: (calData >> 4) & 0x03,
+      accel: (calData >> 2) & 0x03,
+      mag: calData & 0x03,
+    };
   }
 }
