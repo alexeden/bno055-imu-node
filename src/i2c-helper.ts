@@ -13,7 +13,22 @@ export class I2cHelper {
   private constructor(
     readonly bus: i2c.I2cBus
   ) {
+  }
 
+  i2cRead(
+    address: number,
+    length = 1
+  ) {
+    const buffer = Buffer.alloc(length);
+    return new Promise<Buffer>((ok, err) => {
+      this.bus.i2cRead(address, length, buffer, (error, length, data) => {
+        if (error) err(error);
+        else {
+          console.log(`read ${length} bytes: `, data);
+          ok(data);
+        }
+      });
+    });
   }
 
 
