@@ -1,16 +1,17 @@
 import * as i2c from 'i2c-bus';
 
 export class I2cHelper {
-  static async open(): Promise<I2cHelper> {
+  static async open(address: number): Promise<I2cHelper> {
     const wire = await new Promise<i2c.I2cBus>((ok, error) => {
       const i2cBus = i2c.open(1, err => error ? error(err) : ok(i2cBus));
     });
 
-    return new I2cHelper(wire);
+    return new I2cHelper(wire, address);
   }
 
   private constructor(
-    readonly bus: i2c.I2cBus
+    readonly bus: i2c.I2cBus,
+    readonly address: number
   ) { }
 
   i2cRead(
@@ -30,22 +31,15 @@ export class I2cHelper {
     });
   }
 
-  readByte(
-    address: number,
-    reg: number
-  ) {
+  readByte(reg: number) {
     return new Promise<number>((ok, err) => {
-      this.bus.readByte(address, reg, (error, byte) => error ? err(error) : ok(byte));
+      this.bus.readByte(this.address, reg, (error, byte) => error ? err(error) : ok(byte));
     });
   }
 
-  writeByte(
-    address: number,
-    reg: number,
-    byte: number
-  ) {
+  writeByte(reg: number, byte: number) {
     return new Promise((ok, err) => {
-      this.bus.writeByte(address, reg, byte, error => error ? err(error) : ok());
+      this.bus.writeByte(this.address, reg, byte, error => error ? err(error) : ok());
     });
   }
 }

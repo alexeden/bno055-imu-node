@@ -6,7 +6,7 @@ export class BNO050 {
   static async begin(
     mode: OpMode = OpMode.OPERATION_MODE_NDOF
   ): Promise<BNO050> {
-    const bus = await I2cHelper.open();
+    const bus = await I2cHelper.open(BNO055_ADDRESS_A);
     const device = new BNO050(bus);
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);
@@ -28,7 +28,7 @@ export class BNO050 {
   }
 
   async verifyConnection() {
-    const id = await this.bus.readByte(BNO055_ADDRESS_A, Reg.CHIP_ID_ADDR);
+    const id = await this.bus.readByte(Reg.CHIP_ID_ADDR);
     console.log('CHIP_ID_ADDR read: ', id);
     if (id !== BNO055_ID) {
       throw new Error(`Device does not seem to be connected`);
@@ -40,22 +40,22 @@ export class BNO050 {
 
   async reset(byte = 0x20) {
     console.log('SYS_TRIGGER_ADDR write: ', byte);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.SYS_TRIGGER_ADDR, byte);
+    await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, byte);
   }
 
   async setMode(
     mode: OpMode
   ) {
     console.log('OPR_MODE_ADDR write: ', mode);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.OPR_MODE_ADDR, mode);
+    await this.bus.writeByte(Reg.OPR_MODE_ADDR, mode);
     this.mode = mode;
   }
 
   async setNormalPowerMode() {
     console.log('PWR_MODE_ADDR write: ', Power.POWER_MODE_NORMAL);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.PWR_MODE_ADDR, Power.POWER_MODE_NORMAL);
+    await this.bus.writeByte(Reg.PWR_MODE_ADDR, Power.POWER_MODE_NORMAL);
     console.log('PAGE_ID_ADDR write: ', 0);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.PAGE_ID_ADDR, 0);
+    await this.bus.writeByte(Reg.PAGE_ID_ADDR, 0);
   }
 
 
@@ -66,8 +66,8 @@ export class BNO050 {
     const savedMode = this.mode;
     /* Switch to config mode (just in case since this is the default) */
     await this.setMode(OpMode.OPERATION_MODE_CONFIG);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.PAGE_ID_ADDR, 0);
-    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.SYS_TRIGGER_ADDR, usextal ? 0x80 : 0x00);
+    await this.bus.writeByte(Reg.PAGE_ID_ADDR, 0);
+    await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, usextal ? 0x80 : 0x00);
     /* Set the requested operating mode (see section 3.3) */
     await this.setMode(savedMode);
   }
