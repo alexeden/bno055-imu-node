@@ -163,7 +163,7 @@ export enum Power {
 }
 
 /** Operation mode settings */
-export enum OpModeRegister {
+export enum OpMode {
   OPERATION_MODE_CONFIG = 0X00,
   OPERATION_MODE_ACCONLY = 0X01,
   OPERATION_MODE_MAGONLY = 0X02,

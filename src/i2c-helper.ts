@@ -9,11 +9,9 @@ export class I2cHelper {
     return new I2cHelper(wire);
   }
 
-
   private constructor(
     readonly bus: i2c.I2cBus
-  ) {
-  }
+  ) { }
 
   i2cRead(
     address: number,

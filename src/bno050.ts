@@ -1,25 +1,25 @@
-import { OpModeRegister, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
+import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
 import { I2cHelper } from './i2c-helper';
 
 export class BNO050 {
 
   static async begin(
-    mode: OpModeRegister
+    mode: OpMode = OpMode.OPERATION_MODE_NDOF
   ): Promise<BNO050> {
     const bus = await I2cHelper.open();
     const device = new BNO050(bus);
     await device.verifyConnection();
-    await device.setMode(OpModeRegister.OPERATION_MODE_CONFIG);
+    await device.setMode(OpMode.OPERATION_MODE_CONFIG);
     await device.reset();
     await device.verifyConnection();
     await device.setNormalPowerMode();
     await device.reset(0x00); // why?
-    await device.setMode(OpModeRegister.OPERATION_MODE_NDOF);
+    await device.setMode(OpMode.OPERATION_MODE_NDOF);
 
     return device;
   }
 
-  mode: OpModeRegister = OpModeRegister.OPERATION_MODE_CONFIG;
+  mode: OpMode = OpMode.OPERATION_MODE_CONFIG;
 
   private constructor(
     private readonly bus: I2cHelper
@@ -44,8 +44,8 @@ export class BNO050 {
   }
 
   async setMode(
-    mode: OpModeRegister
-    ) {
+    mode: OpMode
+  ) {
     console.log('OPR_MODE_ADDR write: ', mode);
     await this.bus.writeByte(BNO055_ADDRESS_A, Reg.OPR_MODE_ADDR, mode);
     this.mode = mode;
@@ -58,4 +58,17 @@ export class BNO050 {
     await this.bus.writeByte(BNO055_ADDRESS_A, Reg.PAGE_ID_ADDR, 0);
   }
 
+
+  /**
+   * Use the external 32.768KHz crystal
+   */
+  async setExtCrystalUse(usextal: boolean) {
+    const savedMode = this.mode;
+    /* Switch to config mode (just in case since this is the default) */
+    await this.setMode(OpMode.OPERATION_MODE_CONFIG);
+    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.PAGE_ID_ADDR, 0);
+    await this.bus.writeByte(BNO055_ADDRESS_A, Reg.SYS_TRIGGER_ADDR, usextal ? 0x80 : 0x00);
+    /* Set the requested operating mode (see section 3.3) */
+    await this.setMode(savedMode);
+  }
 }
