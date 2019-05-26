@@ -5,7 +5,7 @@ export const NUM_BNO055_OFFSET_REGISTERS = 22;
 
 
 /** BNO055 Data Registers */
-export enum DataRegister {
+export enum Reg {
   /* Page id register definition */
   PAGE_ID_ADDR = 0X07,
 
@@ -156,7 +156,7 @@ export enum DataRegister {
 
 
 /** BNO055 power settings */
-export enum PowerRegister {
+export enum Power {
   POWER_MODE_NORMAL = 0X00,
   POWER_MODE_LOWPOWER = 0X01,
   POWER_MODE_SUSPEND = 0X02,

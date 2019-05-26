@@ -32,13 +32,22 @@ export class I2cHelper {
     });
   }
 
+  readByte(
+    address: number,
+    reg: number
+  ) {
+    return new Promise<number>((ok, err) => {
+      this.bus.readByte(address, reg, (error, byte) => error ? err(error) : ok(byte));
+    });
+  }
+
   writeByte(
     address: number,
     reg: number,
     byte: number
   ) {
-    return new Promise<number>((ok, err) => {
-      this.bus.writeByte(address, reg, byte, error => error ? err(error) : ok(byte));
+    return new Promise((ok, err) => {
+      this.bus.writeByte(address, reg, byte, error => error ? err(error) : ok());
     });
   }
 }
