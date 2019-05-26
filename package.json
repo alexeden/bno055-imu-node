@@ -1,0 +1,34 @@
+{
+  "name": "rpi-bno-imu",
+  "version": "1.0.0",
+  "description": "<<<description>>>",
+  "main": "dist/index.js",
+  "scripts": {
+    "build-changes": "echo 'Source will rebuild on changes' && nodemon --config nodemon.build.json",
+    "build": "rimraf dist && tsc -p src",
+    "test": "ts-node -P examples/tsconfig.json",
+    "lint": "tslint -c ./tslint.json --project examples && tslint -c ./tslint.json --project src",
+    "prepublish": "npm run lint && npm run build",
+    "sync-changes": "echo 'Changes will be pushed to remote device' && nodemon --config nodemon.sync.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexeden/rpi-bno-imu.git"
+  },
+  "author": "Alex Eden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexeden/rpi-bno-imu/issues"
+  },
+  "homepage": "https://github.com/alexeden/rpi-bno-imu#readme",
+  "devDependencies": {
+    "@types/node": "^12.0.2",
+    "chalk": "^2.4.2",
+    "nodemon": "^1.19.1",
+    "rimraf": "^2.6.3",
+    "rsync": "^0.6.1",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
+  }
+}
