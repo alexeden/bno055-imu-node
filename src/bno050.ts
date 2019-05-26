@@ -90,4 +90,32 @@ export class BNO050 {
       mag: calData & 0x03,
     };
   }
+
+  /**
+   * Checks that all calibration status values are set to 3 (fully calibrated)
+   */
+  async isFullyCalibrated() {
+    const { sys, accel, gyro, mag } = await this.getCalibration();
+
+    switch (this.mode) {
+      case OpMode.OPERATION_MODE_ACCONLY:
+        return accel === 3;
+      case OpMode.OPERATION_MODE_MAGONLY:
+        return mag === 3;
+      case OpMode.OPERATION_MODE_GYRONLY:
+      case OpMode.OPERATION_MODE_M4G:
+        return gyro === 3;
+      case OpMode.OPERATION_MODE_ACCMAG:
+      case OpMode.OPERATION_MODE_COMPASS:
+        return accel === 3 && mag === 3;
+      case OpMode.OPERATION_MODE_ACCGYRO:
+      case OpMode.OPERATION_MODE_IMUPLUS:
+        return accel === 3 && gyro === 3;
+      case OpMode.OPERATION_MODE_MAGGYRO:
+        return mag === 3 && gyro === 3;
+      default:
+        return sys === 3 && gyro === 3 && accel === 3 && mag === 3;
+    }
+  }
+
 }
