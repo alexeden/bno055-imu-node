@@ -14,14 +14,30 @@ export class I2cHelper {
     readonly address: number
   ) { }
 
-  i2cRead(
-    address: number,
+  read(
     length = 1
   ) {
     const buffer = Buffer.alloc(length);
 
     return new Promise<Buffer>((ok, err) => {
-      this.bus.i2cRead(address, length, buffer, (error, len, data) => {
+      this.bus.i2cRead(this.address, length, buffer, (error, len, data) => {
+        if (error) err(error);
+        else {
+          console.log(`read ${len} bytes: `, data);
+          ok(data);
+        }
+      });
+    });
+  }
+
+  readBlock(
+    reg: number,
+    length = 1
+  ) {
+    const buffer = Buffer.alloc(length);
+
+    return new Promise<Buffer>((ok, err) => {
+      this.bus.readI2cBlock(this.address, reg, length, buffer, (error, len, data) => {
         if (error) err(error);
         else {
           console.log(`read ${len} bytes: `, data);

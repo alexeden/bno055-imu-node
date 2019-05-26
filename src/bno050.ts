@@ -1,3 +1,4 @@
+import { quat } from 'gl-matrix';
 import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus } from './types';
@@ -116,6 +117,21 @@ export class BNO050 {
       default:
         return sys === 3 && gyro === 3 && accel === 3 && mag === 3;
     }
+  }
+
+  /**
+   *  Gets a quaternion reading from the specified source
+   */
+  async getQuat() {
+    const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB_ADDR, 8);
+    const w = ((buffer[1]) << 8) | (buffer[0]);
+    const x = ((buffer[3]) << 8) | (buffer[2]);
+    const y = ((buffer[5]) << 8) | (buffer[4]);
+    const z = ((buffer[7]) << 8) | (buffer[6]);
+
+    const scale = (1.0 / (1 << 14));
+
+    return quat.fromValues(scale * w, scale * x, scale * y, scale * z);
   }
 
 }
