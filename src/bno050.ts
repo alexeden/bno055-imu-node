@@ -8,7 +8,9 @@ export class BNO050 {
   static async begin(
     mode: OpMode = OpMode.OPERATION_MODE_NDOF
   ): Promise<BNO050> {
+    console.log('begin BNO050');
     const bus = await I2cHelper.open(BNO055_ADDRESS_A);
+    console.log('bus open');
     const device = new BNO050(bus);
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);

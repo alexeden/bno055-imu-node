@@ -9,7 +9,7 @@
     "test": "ts-node -P examples/tsconfig.json",
     "lint": "tslint -c ./tslint.json --project examples && tslint -c ./tslint.json --project src",
     "prepublish": "npm run lint && npm run build",
-    "sync": "node sync",
+    "sync": "npm run build && node sync",
     "sync-changes": "echo 'Changes will be pushed to remote device' && nodemon --config nodemon.sync.json"
   },
   "repository": {

@@ -3,7 +3,7 @@ import * as i2c from 'i2c-bus';
 export class I2cHelper {
   static async open(address: number): Promise<I2cHelper> {
     const wire = await new Promise<i2c.I2cBus>((ok, error) => {
-      const i2cBus = i2c.open(1, err => error ? error(err) : ok(i2cBus));
+      const i2cBus = i2c.open(1, err => err === null ? ok(i2cBus) : error(err));
     });
 
     return new I2cHelper(wire, address);

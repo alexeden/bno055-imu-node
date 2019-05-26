@@ -1,6 +1,6 @@
 {
   "ext": "ts,json,cc,h,gyp",
-  "exec": "npm run build && npm run example -- examples/test.ts",
+  "exec": "node examples/test.js",
   "events": {},
   "watch": [
     "src/**",
