@@ -20,16 +20,25 @@ export class I2cHelper {
     length = 1
   ) {
     const buffer = Buffer.alloc(length);
+
     return new Promise<Buffer>((ok, err) => {
-      this.bus.i2cRead(address, length, buffer, (error, length, data) => {
+      this.bus.i2cRead(address, length, buffer, (error, len, data) => {
         if (error) err(error);
         else {
-          console.log(`read ${length} bytes: `, data);
+          console.log(`read ${len} bytes: `, data);
           ok(data);
         }
       });
     });
   }
 
-
+  writeByte(
+    address: number,
+    reg: number,
+    byte: number
+  ) {
+    return new Promise<number>((ok, err) => {
+      this.bus.writeByte(address, reg, byte, error => error ? err(error) : ok(byte));
+    });
+  }
 }

@@ -8,7 +8,8 @@ export class BNO050 {
   ): Promise<BNO050> {
     const bus = await I2cHelper.open();
     const device = new BNO050(bus);
-    await device.verifyConnection()
+    await device.verifyConnection();
+
     return device;
   }
 

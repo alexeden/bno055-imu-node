@@ -4,7 +4,7 @@ export const BNO055_ID = 0xA0;
 export const NUM_BNO055_OFFSET_REGISTERS = 22;
 
 
-/** BNO055 Data Registers **/
+/** BNO055 Data Registers */
 export enum DataRegister {
   /* Page id register definition */
   PAGE_ID_ADDR = 0X07,
@@ -151,7 +151,7 @@ export enum DataRegister {
   ACCEL_RADIUS_LSB_ADDR = 0X67,
   ACCEL_RADIUS_MSB_ADDR = 0X68,
   MAG_RADIUS_LSB_ADDR = 0X69,
-  MAG_RADIUS_MSB_ADDR = 0X6A
+  MAG_RADIUS_MSB_ADDR = 0X6A,
 }
 
 
@@ -159,10 +159,10 @@ export enum DataRegister {
 export enum PowerRegister {
   POWER_MODE_NORMAL = 0X00,
   POWER_MODE_LOWPOWER = 0X01,
-  POWER_MODE_SUSPEND = 0X02
+  POWER_MODE_SUSPEND = 0X02,
 }
 
-/** Operation mode settings **/
+/** Operation mode settings */
 export enum OpModeRegister {
   OPERATION_MODE_CONFIG = 0X00,
   OPERATION_MODE_ACCONLY = 0X01,
@@ -176,10 +176,10 @@ export enum OpModeRegister {
   OPERATION_MODE_COMPASS = 0X09,
   OPERATION_MODE_M4G = 0X0A,
   OPERATION_MODE_NDOF_FMC_OFF = 0X0B,
-  OPERATION_MODE_NDOF = 0X0C
+  OPERATION_MODE_NDOF = 0X0C,
 }
 
-/** Remap settings **/
+/** Remap settings */
 export enum RemapRegister {
   REMAP_CONFIG_P0 = 0x21,
   REMAP_CONFIG_P1 = 0x24, // default
@@ -188,10 +188,10 @@ export enum RemapRegister {
   REMAP_CONFIG_P4 = 0x24,
   REMAP_CONFIG_P5 = 0x21,
   REMAP_CONFIG_P6 = 0x21,
-  REMAP_CONFIG_P7 = 0x24
+  REMAP_CONFIG_P7 = 0x24,
 }
 
-/** Remap Signs **/
+/** Remap Signs */
 export enum RemapSigns {
   REMAP_SIGN_P0 = 0x04,
   REMAP_SIGN_P1 = 0x00, // default
@@ -200,5 +200,5 @@ export enum RemapSigns {
   REMAP_SIGN_P4 = 0x03,
   REMAP_SIGN_P5 = 0x01,
   REMAP_SIGN_P6 = 0x07,
-  REMAP_SIGN_P7 = 0x05
+  REMAP_SIGN_P7 = 0x05,
 }
