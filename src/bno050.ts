@@ -3,6 +3,9 @@ import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus } from './types';
 
+
+const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
+
 export class BNO050 {
 
   static async begin(
@@ -14,7 +17,9 @@ export class BNO050 {
     const device = new BNO050(bus);
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);
+    await wait(1000);
     await device.reset();
+    await wait(1000);
     await device.verifyConnection();
     await device.setNormalPowerMode();
     await device.reset(0x00); // why?
@@ -33,7 +38,7 @@ export class BNO050 {
 
   async verifyConnection() {
     const id = await this.bus.readByte(Reg.CHIP_ID_ADDR);
-    console.log('CHIP_ID_ADDR read: ', id);
+    console.log('CHIP_ID_ADDR read this ID: ', id);
     if (id !== BNO055_ID) {
       throw new Error(`Device does not seem to be connected`);
     }
@@ -43,23 +48,22 @@ export class BNO050 {
   }
 
   async reset(byte = 0x20) {
-    console.log('SYS_TRIGGER_ADDR write: ', byte);
     await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, byte);
+    console.log('device reset');
   }
 
   async setMode(
     mode: OpMode
   ) {
-    console.log('OPR_MODE_ADDR write: ', mode);
     await this.bus.writeByte(Reg.OPR_MODE_ADDR, mode);
     this.mode = mode;
+    console.log('mode set: ', mode);
   }
 
   async setNormalPowerMode() {
-    console.log('PWR_MODE_ADDR write: ', Power.POWER_MODE_NORMAL);
     await this.bus.writeByte(Reg.PWR_MODE_ADDR, Power.POWER_MODE_NORMAL);
-    console.log('PAGE_ID_ADDR write: ', 0);
     await this.bus.writeByte(Reg.PAGE_ID_ADDR, 0);
+    console.log('power mode set to ', Power.POWER_MODE_NORMAL);
   }
 
 
