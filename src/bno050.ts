@@ -87,14 +87,13 @@ export class BNO050 {
    *  mag   Current calibration status of Magnetometer, read-only
    */
   async getCalibration(): Promise<CalibrationStatus> {
-    const calData = await this.bus.readByte(Reg.CALIB_STAT_ADDR);
-    console.log('calibration byte: ', calData);
+    const calByte = await this.bus.readByte(Reg.CALIB_STAT_ADDR);
 
     return {
-      sys: (calData >> 6) & 0x03,
-      gyro: (calData >> 4) & 0x03,
-      accel: (calData >> 2) & 0x03,
-      mag: calData & 0x03,
+      sys: (calByte >> 6) & 0x03,
+      gyro: (calByte >> 4) & 0x03,
+      accel: (calByte >> 2) & 0x03,
+      mag: calByte & 0x03,
     };
   }
 

@@ -22,10 +22,7 @@ export class I2cHelper {
     return new Promise<Buffer>((ok, err) => {
       this.bus.i2cRead(this.address, length, buffer, (error, len, data) => {
         if (error) err(error);
-        else {
-          console.log(`read ${len} bytes: `, data);
-          ok(data);
-        }
+        else ok(data);
       });
     });
   }
@@ -39,10 +36,7 @@ export class I2cHelper {
     return new Promise<Buffer>((ok, err) => {
       this.bus.readI2cBlock(this.address, reg, length, buffer, (error, len, data) => {
         if (error) err(error);
-        else {
-          console.log(`read ${len} bytes: `, data);
-          ok(data);
-        }
+        else ok(data);
       });
     });
   }
