@@ -1,8 +1,8 @@
-const { BNO050 } = require('../dist');
+const { BNO055 } = require('../dist');
 
 (async () => {
   try {
-    const imu = await BNO050.begin();
+    const imu = await BNO055.begin();
 
     console.log('created imu: ', imu);
     const printQuat = async () => {

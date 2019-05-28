@@ -1,2 +1,2 @@
 export * from './constants';
-export * from './bno050';
+export * from './bno055';

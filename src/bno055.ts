@@ -6,15 +6,15 @@ import { CalibrationStatus } from './types';
 
 const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 
-export class BNO050 {
+export class BNO055 {
 
   static async begin(
     mode: OpMode = OpMode.OPERATION_MODE_NDOF
-  ): Promise<BNO050> {
-    console.log('begin BNO050');
+  ): Promise<BNO055> {
+    console.log('begin BNO055');
     const bus = await I2cHelper.open(BNO055_ADDRESS_A);
     console.log('bus open');
-    const device = new BNO050(bus);
+    const device = new BNO055(bus);
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);
     await wait(1000);
