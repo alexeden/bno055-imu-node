@@ -5,6 +5,10 @@ const { BNO055 } = require('../dist');
     const imu = await BNO055.begin();
 
     console.log('created imu: ', imu);
+
+    await imu.setExtCrystalUse(true);
+    console.log('using external crystal');
+
     const printQuat = async () => {
       console.log('quat: ', await imu.getQuat());
       console.log('calibration: ', await imu.getCalibration());
