@@ -13,7 +13,7 @@ const { BNO055 } = require('../dist');
       console.log('quat: ', await imu.getQuat());
       console.log('calibration: ', await imu.getCalibration());
       console.log('is calibrated: ', await imu.isFullyCalibrated());
-
+      // console.log('offsets: ', await imu.getSensorOffsets());
       setTimeout(printQuat, 1000);
     };
 
