@@ -5,6 +5,15 @@ export interface CalibrationStatus {
   mag: number;
 }
 
+export interface Versions {
+  device: number;
+  accel: number;
+  mag: number;
+  gyro: number;
+  software: number;
+  bootloader: number;
+}
+
 export interface Offsets {
   accelX: number;
   accelY: number;

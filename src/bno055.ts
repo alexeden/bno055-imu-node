@@ -1,7 +1,7 @@
 import { quat } from 'gl-matrix';
 import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT } from './constants';
 import { I2cHelper } from './i2c-helper';
-import { CalibrationStatus, Offsets } from './types';
+import { CalibrationStatus, Offsets, Versions } from './types';
 
 
 const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
@@ -15,6 +15,7 @@ export class BNO055 {
     const bus = await I2cHelper.open(BNO055_ADDRESS_A);
     console.log('bus open');
     const device = new BNO055(bus);
+    console.log('current page: ', await device.getPage());
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);
     await wait(1000);
@@ -37,9 +38,7 @@ export class BNO055 {
   }
 
   async verifyConnection() {
-    const id = await this.bus.readByte(Reg.CHIP_ID);
-    console.log('CHIP_ID_ADDR read this ID: ', id);
-    if (id !== BNO055_ID) {
+    if (await this.bus.readByte(Reg.DEVICE_ID) !== BNO055_ID) {
       throw new Error(`Device does not seem to be connected`);
     }
     else {
@@ -52,12 +51,10 @@ export class BNO055 {
     console.log('device reset');
   }
 
-  /**
-   *  @brief  Reads the sensor's offset registers into an offset struct
-   *  @param  offsets_type
-   *          type of offsets
-   *  @return true if read is successful
-   */
+  async getPage() {
+    return this.bus.readByte(Reg.PAGE_ID);
+  }
+
   async getSensorOffsets(): Promise<Offsets | undefined> {
     if (await this.isFullyCalibrated()) {
       const savedMode = this.mode;
@@ -111,6 +108,17 @@ export class BNO055 {
     else {
       return;
     }
+  }
+
+  async getVersions(): Promise<Versions> {
+    return {
+      device: await this.bus.readByte(Reg.DEVICE_ID),
+      accel: await this.bus.readByte(Reg.ACCEL_ID),
+      mag: await this.bus.readByte(Reg.MAG_ID),
+      gyro: await this.bus.readByte(Reg.GYRO_ID),
+      software: await this.bus.readDoubleByte(Reg.SW_REV_ID_LSB),
+      bootloader: await this.bus.readByte(Reg.BOOTLOADER_REV_ID),
+    };
   }
 
   async setMode(

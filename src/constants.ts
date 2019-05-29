@@ -12,13 +12,13 @@ export enum Reg {
   PAGE_ID = 0X07,
 
   /* PAGE0 REGISTER DEFINITION START*/
-  CHIP_ID = 0x00,
-  ACCEL_REV_ID = 0x01,
-  MAG_REV_ID = 0x02,
-  GYRO_REV_ID = 0x03,
+  DEVICE_ID = 0x00,
+  ACCEL_ID = 0x01,
+  MAG_ID = 0x02,
+  GYRO_ID = 0x03,
   SW_REV_ID_LSB = 0x04,
   SW_REV_ID_MSB = 0x05,
-  BL_REV_ID = 0X06,
+  BOOTLOADER_REV_ID = 0X06,
 
   /* Accel data register */
   ACCEL_DATA_X_LSB = 0X08,
