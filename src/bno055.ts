@@ -52,15 +52,15 @@ export class BNO055 {
   }
 
   async getPage() {
-    return this.bus.readByte(Reg.PAGE_ID);
+    return await this.bus.readByte(Reg.PAGE_ID) & 0x1;
   }
 
   async getSystemStatus() {
-    return this.bus.readByte(Reg.SYS_STAT);
+    return await this.bus.readByte(Reg.SYS_STAT) & 0x7;
   }
 
   async getSystemError() {
-    return this.bus.readByte(Reg.SYS_ERR);
+    return await this.bus.readByte(Reg.SYS_ERR) & 0xF;
   }
 
   async getSensorOffsets(): Promise<Offsets | undefined> {
