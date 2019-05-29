@@ -43,8 +43,14 @@ export class I2cHelper {
 
   readByte(reg: number) {
     return new Promise<number>((ok, err) => {
-      this.bus.readByte(this.address, reg, (error, byte) => error ? err(error) : ok(byte));
+      this.bus.readByte(this.address, reg, (error, byte) => error ? err(error) : ok(0xFF & byte));
     });
+  }
+
+  async readDoubleByte(reg: number) {
+    const [lsb, msb] = await this.readBlock(reg, 2);
+
+    return (msb << 8) | lsb;
   }
 
   writeByte(reg: number, byte: number) {

@@ -9,22 +9,23 @@ const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 export class BNO055 {
 
   static async begin(
-    mode: OpMode = OpMode.OPERATION_MODE_NDOF
+    mode: OpMode = OpMode.OPERATION_MODE_NDOF,
+    useXtal = false
   ): Promise<BNO055> {
     console.log('begin BNO055');
     const bus = await I2cHelper.open(BNO055_ADDRESS_A);
     console.log('bus open');
     const device = new BNO055(bus);
-    console.log('current page: ', await device.getPage());
     await device.verifyConnection();
     await device.setMode(OpMode.OPERATION_MODE_CONFIG);
-    await wait(1000);
-    await device.reset();
-    await wait(1000);
-    await device.verifyConnection();
+    await device.resetSystem();
     await device.setNormalPowerMode();
-    await device.reset(0x00); // why?
-    await device.setMode(OpMode.OPERATION_MODE_NDOF);
+
+    await device.verifyConnection();
+    await device.resetSystem(); // why?
+    await device.setMode(mode);
+    await device.useExternalCrystal(useXtal);
+    await wait(1000);
 
     return device;
   }
@@ -33,9 +34,7 @@ export class BNO055 {
 
   private constructor(
     private readonly bus: I2cHelper
-  ) {
-    console.log('constructed!', this.bus);
-  }
+  ) { }
 
   async verifyConnection() {
     if (await this.bus.readByte(Reg.DEVICE_ID) !== BNO055_ID) {
@@ -46,13 +45,22 @@ export class BNO055 {
     }
   }
 
-  async reset(byte = 0x20) {
-    await this.bus.writeByte(Reg.SYS_TRIGGER, byte);
+  async resetSystem() {
+    await this.bus.writeByte(Reg.SYS_TRIGGER, 0x20);
+    await wait(2000);
     console.log('device reset');
   }
 
   async getPage() {
     return this.bus.readByte(Reg.PAGE_ID);
+  }
+
+  async getSystemStatus() {
+    return this.bus.readByte(Reg.SYS_STAT);
+  }
+
+  async getSystemError() {
+    return this.bus.readByte(Reg.SYS_ERR);
   }
 
   async getSensorOffsets(): Promise<Offsets | undefined> {
@@ -121,6 +129,10 @@ export class BNO055 {
     };
   }
 
+  async getMode() {
+    return (await this.bus.readByte(Reg.OPR_MODE)) & 0xF;
+  }
+
   async setMode(
     mode: OpMode
   ) {
@@ -140,7 +152,7 @@ export class BNO055 {
   /**
    * Use the external 32.768KHz crystal
    */
-  async setExtCrystalUse(usextal: boolean) {
+  async useExternalCrystal(usextal: boolean) {
     const savedMode = this.mode;
     /* Switch to config mode (just in case since this is the default) */
     await this.setMode(OpMode.OPERATION_MODE_CONFIG);
@@ -148,6 +160,10 @@ export class BNO055 {
     await this.bus.writeByte(Reg.SYS_TRIGGER, usextal ? 0x80 : 0x00);
     /* Set the requested operating mode (see section 3.3) */
     await this.setMode(savedMode);
+  }
+
+  get inConfigMode() {
+    return this.mode === OpMode.OPERATION_MODE_CONFIG;
   }
 
   /**
