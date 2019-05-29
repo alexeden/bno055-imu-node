@@ -37,7 +37,7 @@ export class BNO055 {
   }
 
   async verifyConnection() {
-    const id = await this.bus.readByte(Reg.CHIP_ID_ADDR);
+    const id = await this.bus.readByte(Reg.CHIP_ID);
     console.log('CHIP_ID_ADDR read this ID: ', id);
     if (id !== BNO055_ID) {
       throw new Error(`Device does not seem to be connected`);
@@ -48,7 +48,7 @@ export class BNO055 {
   }
 
   async reset(byte = 0x20) {
-    await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, byte);
+    await this.bus.writeByte(Reg.SYS_TRIGGER, byte);
     console.log('device reset');
   }
 
@@ -70,19 +70,19 @@ export class BNO055 {
           +/-4g  = +/- 4000 mg
           +/-8g  = +/- 8000 mg
           +/-1§g = +/- 16000 mg */
-        accelX: (await this.bus.readByte(Reg.ACCEL_OFFSET_X_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_X_LSB_ADDR)),
-        accelY: (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB_ADDR)),
-        accelZ: (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB_ADDR)),
+        accelX: (await this.bus.readByte(Reg.ACCEL_OFFSET_X_MSB) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_X_LSB)),
+        accelY: (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_MSB) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB)),
+        accelZ: (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_MSB) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB)),
         /* Magnetometer offset range = +/- 6400 LSB where 1uT = 16 LSB */
-        magX: (await this.bus.readByte(Reg.MAG_OFFSET_X_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_X_LSB_ADDR)),
-        magY: (await this.bus.readByte(Reg.MAG_OFFSET_Y_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB_ADDR)),
-        magZ: (await this.bus.readByte(Reg.MAG_OFFSET_Z_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB_ADDR)),
+        magX: (await this.bus.readByte(Reg.MAG_OFFSET_X_MSB) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_X_LSB)),
+        magY: (await this.bus.readByte(Reg.MAG_OFFSET_Y_MSB) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB)),
+        magZ: (await this.bus.readByte(Reg.MAG_OFFSET_Z_MSB) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB)),
         /* Gyro offset range depends on the DPS range:
           2000 dps = +/- 32000 LSB
           1000 dps = +/- 16000 LSB
@@ -90,18 +90,18 @@ export class BNO055 {
           250 dps = +/- 4000 LSB
           125 dps = +/- 2000 LSB
           ... where 1 DPS = 16 LSB */
-        gyroX: (await this.bus.readByte(Reg.GYRO_OFFSET_X_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB_ADDR)),
-        gyroY: (await this.bus.readByte(Reg.GYRO_OFFSET_Y_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB_ADDR)),
-        gyroZ: (await this.bus.readByte(Reg.GYRO_OFFSET_Z_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB_ADDR)),
+        gyroX: (await this.bus.readByte(Reg.GYRO_OFFSET_X_MSB) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB)),
+        gyroY: (await this.bus.readByte(Reg.GYRO_OFFSET_Y_MSB) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB)),
+        gyroZ: (await this.bus.readByte(Reg.GYRO_OFFSET_Z_MSB) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB)),
         /* Accelerometer radius = +/- 1000 LSB */
-        accelRadius: (await this.bus.readByte(Reg.ACCEL_RADIUS_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_RADIUS_LSB_ADDR)),
+        accelRadius: (await this.bus.readByte(Reg.ACCEL_RADIUS_MSB) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_RADIUS_LSB)),
         /* Magnetometer radius = +/- 960 LSB */
-        magRadius: (await this.bus.readByte(Reg.MAG_RADIUS_MSB_ADDR) << 8)
-          | (await this.bus.readByte(Reg.MAG_RADIUS_LSB_ADDR)),
+        magRadius: (await this.bus.readByte(Reg.MAG_RADIUS_MSB) << 8)
+          | (await this.bus.readByte(Reg.MAG_RADIUS_LSB)),
       };
 
       await this.setMode(savedMode);
@@ -116,15 +116,15 @@ export class BNO055 {
   async setMode(
     mode: OpMode
   ) {
-    await this.bus.writeByte(Reg.OPR_MODE_ADDR, mode);
+    await this.bus.writeByte(Reg.OPR_MODE, mode);
     await wait(mode === OpMode.OPERATION_MODE_CONFIG ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
     this.mode = mode;
     console.log('mode set: ', mode);
   }
 
   async setNormalPowerMode() {
-    await this.bus.writeByte(Reg.PWR_MODE_ADDR, Power.POWER_MODE_NORMAL);
-    await this.bus.writeByte(Reg.PAGE_ID_ADDR, 0);
+    await this.bus.writeByte(Reg.PWR_MODE, Power.POWER_MODE_NORMAL);
+    await this.bus.writeByte(Reg.PAGE_ID, 0);
     console.log('power mode set to ', Power.POWER_MODE_NORMAL);
   }
 
@@ -136,8 +136,8 @@ export class BNO055 {
     const savedMode = this.mode;
     /* Switch to config mode (just in case since this is the default) */
     await this.setMode(OpMode.OPERATION_MODE_CONFIG);
-    await this.bus.writeByte(Reg.PAGE_ID_ADDR, 0);
-    await this.bus.writeByte(Reg.SYS_TRIGGER_ADDR, usextal ? 0x80 : 0x00);
+    await this.bus.writeByte(Reg.PAGE_ID, 0);
+    await this.bus.writeByte(Reg.SYS_TRIGGER, usextal ? 0x80 : 0x00);
     /* Set the requested operating mode (see section 3.3) */
     await this.setMode(savedMode);
   }
@@ -149,7 +149,7 @@ export class BNO055 {
    *  mag   Current calibration status of Magnetometer, read-only
    */
   async getCalibration(): Promise<CalibrationStatus> {
-    const calByte = await this.bus.readByte(Reg.CALIB_STAT_ADDR);
+    const calByte = await this.bus.readByte(Reg.CALIB_STAT);
 
     return {
       sys: (calByte >> 6) & 0x03,
@@ -190,7 +190,7 @@ export class BNO055 {
    *  Gets a quaternion reading from the specified source
    */
   async getQuat() {
-    const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB_ADDR, 8);
+    const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
     const w = ((buffer[1]) << 8) | (buffer[0]);
     const x = ((buffer[3]) << 8) | (buffer[2]);
     const y = ((buffer[5]) << 8) | (buffer[4]);
