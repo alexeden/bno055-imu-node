@@ -3,6 +3,8 @@ export const BNO055_ADDRESS_B = 0x29;
 export const BNO055_ID = 0xA0;
 export const NUM_BNO055_OFFSET_REGISTERS = 22;
 
+export const BNO055_CONFIG_MODE_WAIT = 20;
+export const BNO055_MODE_SWITCH_WAIT = 8;
 
 /** BNO055 Data Registers */
 export enum Reg {

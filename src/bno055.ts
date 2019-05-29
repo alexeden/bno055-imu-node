@@ -1,5 +1,5 @@
 import { quat } from 'gl-matrix';
-import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power } from './constants';
+import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus, Offsets } from './types';
 
@@ -58,60 +58,66 @@ export class BNO055 {
    *          type of offsets
    *  @return true if read is successful
    */
-  async getSensorOffsets() {
-    const savedMode = this.mode;
-    /* Switch to config mode (just in case since this is the default) */
-    await this.setMode(OpMode.OPERATION_MODE_CONFIG);
+  async getSensorOffsets(): Promise<Offsets | undefined> {
+    if (await this.isFullyCalibrated()) {
+      const savedMode = this.mode;
+      /* Switch to config mode (just in case since this is the default) */
+      await this.setMode(OpMode.OPERATION_MODE_CONFIG);
 
-    const offsets: Offsets = {
-      /* Accel offset range depends on the G-range:
-        +/-2g  = +/- 2000 mg
-        +/-4g  = +/- 4000 mg
-        +/-8g  = +/- 8000 mg
-        +/-1§g = +/- 16000 mg */
-      accelX: (await this.bus.readByte(Reg.ACCEL_OFFSET_X_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.ACCEL_OFFSET_X_LSB_ADDR)),
-      accelY: (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB_ADDR)),
-      accelZ: (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB_ADDR)),
-      /* Magnetometer offset range = +/- 6400 LSB where 1uT = 16 LSB */
-      magX: (await this.bus.readByte(Reg.MAG_OFFSET_X_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.MAG_OFFSET_X_LSB_ADDR)),
-      magY: (await this.bus.readByte(Reg.MAG_OFFSET_Y_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB_ADDR)),
-      magZ: (await this.bus.readByte(Reg.MAG_OFFSET_Z_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB_ADDR)),
-      /* Gyro offset range depends on the DPS range:
-        2000 dps = +/- 32000 LSB
-        1000 dps = +/- 16000 LSB
-        500 dps = +/- 8000 LSB
-        250 dps = +/- 4000 LSB
-        125 dps = +/- 2000 LSB
-        ... where 1 DPS = 16 LSB */
-      gyroX: (await this.bus.readByte(Reg.GYRO_OFFSET_X_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB_ADDR)),
-      gyroY: (await this.bus.readByte(Reg.GYRO_OFFSET_Y_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB_ADDR)),
-      gyroZ: (await this.bus.readByte(Reg.GYRO_OFFSET_Z_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB_ADDR)),
-      /* Accelerometer radius = +/- 1000 LSB */
-      accelRadius: (await this.bus.readByte(Reg.ACCEL_RADIUS_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.ACCEL_RADIUS_LSB_ADDR)),
-      /* Magnetometer radius = +/- 960 LSB */
-      magRadius: (await this.bus.readByte(Reg.MAG_RADIUS_MSB_ADDR) << 8)
-        | (await this.bus.readByte(Reg.MAG_RADIUS_LSB_ADDR)),
-    };
+      const offsets: Offsets = {
+        /* Accel offset range depends on the G-range:
+          +/-2g  = +/- 2000 mg
+          +/-4g  = +/- 4000 mg
+          +/-8g  = +/- 8000 mg
+          +/-1§g = +/- 16000 mg */
+        accelX: (await this.bus.readByte(Reg.ACCEL_OFFSET_X_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_X_LSB_ADDR)),
+        accelY: (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB_ADDR)),
+        accelZ: (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB_ADDR)),
+        /* Magnetometer offset range = +/- 6400 LSB where 1uT = 16 LSB */
+        magX: (await this.bus.readByte(Reg.MAG_OFFSET_X_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_X_LSB_ADDR)),
+        magY: (await this.bus.readByte(Reg.MAG_OFFSET_Y_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB_ADDR)),
+        magZ: (await this.bus.readByte(Reg.MAG_OFFSET_Z_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB_ADDR)),
+        /* Gyro offset range depends on the DPS range:
+          2000 dps = +/- 32000 LSB
+          1000 dps = +/- 16000 LSB
+          500 dps = +/- 8000 LSB
+          250 dps = +/- 4000 LSB
+          125 dps = +/- 2000 LSB
+          ... where 1 DPS = 16 LSB */
+        gyroX: (await this.bus.readByte(Reg.GYRO_OFFSET_X_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB_ADDR)),
+        gyroY: (await this.bus.readByte(Reg.GYRO_OFFSET_Y_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB_ADDR)),
+        gyroZ: (await this.bus.readByte(Reg.GYRO_OFFSET_Z_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB_ADDR)),
+        /* Accelerometer radius = +/- 1000 LSB */
+        accelRadius: (await this.bus.readByte(Reg.ACCEL_RADIUS_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.ACCEL_RADIUS_LSB_ADDR)),
+        /* Magnetometer radius = +/- 960 LSB */
+        magRadius: (await this.bus.readByte(Reg.MAG_RADIUS_MSB_ADDR) << 8)
+          | (await this.bus.readByte(Reg.MAG_RADIUS_LSB_ADDR)),
+      };
 
-    await this.setMode(savedMode);
+      await this.setMode(savedMode);
 
-    return offsets;
+      return offsets;
+    }
+    else {
+      return;
+    }
   }
 
   async setMode(
     mode: OpMode
   ) {
     await this.bus.writeByte(Reg.OPR_MODE_ADDR, mode);
+    await wait(mode === OpMode.OPERATION_MODE_CONFIG ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
     this.mode = mode;
     console.log('mode set: ', mode);
   }
