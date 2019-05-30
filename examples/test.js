@@ -2,7 +2,6 @@ const { BNO055, OpMode } = require('../dist');
 
 (async () => {
   try {
-    console.log('op modes: ', OpMode);
     const imu = await BNO055.begin(OpMode.OPERATION_MODE_NDOF, true);
 
     const printQuat = async () => {
@@ -11,7 +10,7 @@ const { BNO055, OpMode } = require('../dist');
       console.log('system status: ', await imu.getSystemStatus());
       console.log('system error: ', await imu.getSystemError());
 
-      // console.log('versions: ', await imu.getVersions());
+      console.log('versions: ', await imu.getVersions());
       console.log('quat: ', await imu.getQuat());
       // console.log('calibration: ', await imu.getCalibration());
       // console.log('is calibrated: ', await imu.isFullyCalibrated());

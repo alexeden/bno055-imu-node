@@ -119,13 +119,19 @@ export class BNO055 {
   }
 
   async getVersions(): Promise<Versions> {
+    const [
+      device, accel, mag, gyro,
+      swLsb, swMsb,
+      bootloader,
+    ] = await this.bus.readBlock(Reg.DEVICE_ID, 7);
+
     return {
-      device: await this.bus.readByte(Reg.DEVICE_ID),
-      accel: await this.bus.readByte(Reg.ACCEL_ID),
-      mag: await this.bus.readByte(Reg.MAG_ID),
-      gyro: await this.bus.readByte(Reg.GYRO_ID),
-      software: await this.bus.readDoubleByte(Reg.SW_REV_ID_LSB),
-      bootloader: await this.bus.readByte(Reg.BOOTLOADER_REV_ID),
+      device,
+      accel,
+      mag,
+      gyro,
+      software: `${swMsb >> 4}.${swMsb & 0xF}.${swLsb >> 4}.${swLsb & 0xF}`,
+      bootloader,
     };
   }
 

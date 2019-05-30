@@ -10,7 +10,7 @@ export interface Versions {
   accel: number;
   mag: number;
   gyro: number;
-  software: number;
+  software: string;
   bootloader: number;
 }
 
