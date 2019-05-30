@@ -30,7 +30,7 @@ export enum OpMode {
   Compass = 0X09,
   ImuMagForGyro = 0X0A,
   FullFmcOff = 0X0B,
-  Full = 0X0C,
+  FullFusion = 0X0C,
 }
 
 /** Page 0 Registers */

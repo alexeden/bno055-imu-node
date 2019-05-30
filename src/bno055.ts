@@ -9,7 +9,7 @@ export class BNO055 {
 
   static async begin(
     address: DeviceAddress,
-    mode: OpMode = OpMode.Full
+    mode: OpMode = OpMode.FullFusion
   ): Promise<BNO055> {
     const bus = await I2cHelper.open(address);
     const device = new BNO055(bus);
@@ -136,10 +136,6 @@ export class BNO055 {
     await this.bus.writeByte(Reg.PAGE_ID, 0);
     await this.bus.writeByte(Reg.SYS_TRIGGER, 0x80);
     await this.setMode(savedMode);
-  }
-
-  get inConfigMode() {
-    return this.mode === OpMode.Config;
   }
 
   async getCalibration(): Promise<CalibrationStatus> {
