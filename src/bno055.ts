@@ -1,5 +1,5 @@
 import { quat } from 'gl-matrix';
-import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, PowerLevel, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT } from './constants';
+import { OpMode, BNO055_ID, Reg, PowerLevel, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT, DeviceAddress } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus, Offsets, Versions, SelfTestResult } from './types';
 
@@ -9,9 +9,10 @@ const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 export class BNO055 {
 
   static async begin(
+    address: DeviceAddress,
     mode: OpMode = OpMode.Full
   ): Promise<BNO055> {
-    const bus = await I2cHelper.open(BNO055_ADDRESS_A);
+    const bus = await I2cHelper.open(address);
     const device = new BNO055(bus);
 
     await device.verifyConnection();

@@ -1,8 +1,8 @@
-const { BNO055, OpMode } = require('../dist');
+const { BNO055, OpMode, DeviceAddress } = require('../dist');
 
 (async () => {
   try {
-    const imu = await BNO055.begin(OpMode.OPERATION_MODE_NDOF, true);
+    const imu = await BNO055.begin(DeviceAddress.A, OpMode.OPERATION_MODE_NDOF, true);
 
     const printQuat = async () => {
       console.log('current mode: ', await imu.getMode());
@@ -15,7 +15,7 @@ const { BNO055, OpMode } = require('../dist');
       console.log('versions: ', await imu.getVersions());
       console.log('quat: ', await imu.getQuat());
       console.log('calibration: ', await imu.getCalibration());
-      // console.log('is calibrated: ', await imu.isFullyCalibrated());
+      console.log('is calibrated: ', await imu.isFullyCalibrated());
       console.log('offsets: ', await imu.getSensorOffsets());
       setTimeout(printQuat, 3333);
     };
@@ -24,7 +24,6 @@ const { BNO055, OpMode } = require('../dist');
 
   }
   catch (error) {
-    console.trace('trace!');
     console.error('error: ', error);
   }
 })();

@@ -14,9 +14,7 @@ export class I2cHelper {
     readonly address: number
   ) { }
 
-  read(
-    length = 1
-  ) {
+  read(length = 1) {
     const buffer = Buffer.alloc(length);
 
     return new Promise<Buffer>((ok, err) => {
@@ -27,10 +25,7 @@ export class I2cHelper {
     });
   }
 
-  readBlock(
-    reg: number,
-    length = 1
-  ) {
+  readBlock(reg: number, length = 1) {
     const buffer = Buffer.alloc(length);
 
     return new Promise<Buffer>((ok, err) => {
