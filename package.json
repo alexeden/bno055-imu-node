@@ -1,6 +1,6 @@
 {
   "name": "bno055-imu-node",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Interact with a BNO055 IMU from your Node.js app",
   "main": "dist/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "rimraf dist && tsc -p src",
     "test": "ts-node -P examples/tsconfig.json",
     "lint": "tslint -c ./tslint.json --project examples && tslint -c ./tslint.json --project src",
-    "prepublish": "npm run lint && npm run build",
+    "prepublishOnly": "npm run lint && npm run build",
     "sync": "npm run build && node sync",
     "sync-changes": "echo 'Changes will be pushed to remote device' && nodemon --config nodemon.sync.json"
   },
