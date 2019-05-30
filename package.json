@@ -1,7 +1,7 @@
 {
-  "name": "rpi-bno-imu",
+  "name": "bno055-imu-node",
   "version": "1.0.0",
-  "description": "Interacting with a BNO-series IMU on a Raspberry Pi",
+  "description": "Interact with a BNO055 IMU from your Node.js app",
   "main": "dist/index.js",
   "scripts": {
     "build-changes": "echo 'Source will rebuild on changes' && nodemon --config nodemon.build.json",
@@ -14,16 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexeden/rpi-bno-imu.git"
+    "url": "git+https://github.com/alexeden/bno055-imu-node.git"
   },
   "author": "Alex Eden",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alexeden/rpi-bno-imu/issues"
+    "url": "https://github.com/alexeden/bno055-imu-node/issues"
   },
-  "homepage": "https://github.com/alexeden/rpi-bno-imu#readme",
+  "homepage": "https://github.com/alexeden/bno055-imu-node#readme",
   "devDependencies": {
-    "@types/gl-matrix": "^2.4.5",
     "@types/i2c-bus": "^1.0.22",
     "@types/node": "^12.0.2",
     "chalk": "^2.4.2",
@@ -35,7 +34,6 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
-    "gl-matrix": "^3.0.0",
     "i2c-bus": "^4.0.9"
   }
 }
