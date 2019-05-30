@@ -61,28 +61,17 @@ export class BNO055 {
       await this.setMode(OpMode.Config);
 
       const offsets: Offsets = {
-        accelX: (await this.bus.readByte(Reg.ACCEL_OFFSET_X_MSB) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_X_LSB)),
-        accelY: (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_MSB) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB)),
-        accelZ: (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_MSB) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB)),
-        magX: (await this.bus.readByte(Reg.MAG_OFFSET_X_MSB) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_X_LSB)),
-        magY: (await this.bus.readByte(Reg.MAG_OFFSET_Y_MSB) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB)),
-        magZ: (await this.bus.readByte(Reg.MAG_OFFSET_Z_MSB) << 8)
-          | (await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB)),
-        gyroX: (await this.bus.readByte(Reg.GYRO_OFFSET_X_MSB) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB)),
-        gyroY: (await this.bus.readByte(Reg.GYRO_OFFSET_Y_MSB) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB)),
-        gyroZ: (await this.bus.readByte(Reg.GYRO_OFFSET_Z_MSB) << 8)
-          | (await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB)),
-        accelRadius: (await this.bus.readByte(Reg.ACCEL_RADIUS_MSB) << 8)
-          | (await this.bus.readByte(Reg.ACCEL_RADIUS_LSB)),
-        magRadius: (await this.bus.readByte(Reg.MAG_RADIUS_MSB) << 8)
-          | (await this.bus.readByte(Reg.MAG_RADIUS_LSB)),
+        accelX: await this.bus.readDoubleByte(Reg.ACCEL_OFFSET_X_LSB),
+        accelY: await this.bus.readByte(Reg.ACCEL_OFFSET_Y_LSB),
+        accelZ: await this.bus.readByte(Reg.ACCEL_OFFSET_Z_LSB),
+        magX: await this.bus.readByte(Reg.MAG_OFFSET_X_LSB),
+        magY: await this.bus.readByte(Reg.MAG_OFFSET_Y_LSB),
+        magZ: await this.bus.readByte(Reg.MAG_OFFSET_Z_LSB),
+        gyroX: await this.bus.readByte(Reg.GYRO_OFFSET_X_LSB),
+        gyroY: await this.bus.readByte(Reg.GYRO_OFFSET_Y_LSB),
+        gyroZ: await this.bus.readByte(Reg.GYRO_OFFSET_Z_LSB),
+        accelRadius: await this.bus.readByte(Reg.ACCEL_RADIUS_LSB),
+        magRadius: await this.bus.readByte(Reg.MAG_RADIUS_LSB),
       };
 
       await this.setMode(savedMode);
