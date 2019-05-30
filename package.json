@@ -1,8 +1,9 @@
 {
   "name": "bno055-imu-node",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Interact with a BNO055 IMU from your Node.js app",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build-changes": "echo 'Source will rebuild on changes' && nodemon --config nodemon.build.json",
     "build": "rimraf dist && tsc -p src",

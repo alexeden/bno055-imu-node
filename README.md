@@ -1,3 +1,5 @@
+![npm version](https://img.shields.io/npm/v/bno055-imu-node.svg?style=for-the-badge&logo=npm&color=c41949)
+
 # BNO055 IMU + Node.js
 
 ## Install
