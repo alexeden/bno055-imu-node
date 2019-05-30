@@ -9,12 +9,14 @@ const { BNO055, OpMode } = require('../dist');
       console.log('current page: ', await imu.getPage());
       console.log('system status: ', await imu.getSystemStatus());
       console.log('system error: ', await imu.getSystemError());
+      console.log('temp: ', await imu.getTemperature());
+      console.log('self-test results: ', await imu.getSelfTestResults());
 
       console.log('versions: ', await imu.getVersions());
       console.log('quat: ', await imu.getQuat());
-      // console.log('calibration: ', await imu.getCalibration());
+      console.log('calibration: ', await imu.getCalibration());
       // console.log('is calibrated: ', await imu.isFullyCalibrated());
-      // console.log('offsets: ', await imu.getSensorOffsets());
+      console.log('offsets: ', await imu.getSensorOffsets());
       setTimeout(printQuat, 3333);
     };
 

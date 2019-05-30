@@ -31,3 +31,10 @@ export interface Offsets {
 
   magRadius: number;
 }
+
+export interface SelfTestResult {
+  mcuPassed: boolean;
+  magPassed: boolean;
+  accelPassed: boolean;
+  gyroPassed: boolean;
+}
