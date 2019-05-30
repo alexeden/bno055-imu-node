@@ -1,4 +1,3 @@
-import { quat } from 'gl-matrix';
 import { OpMode, BNO055_ID, Reg, PowerLevel, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT, DeviceAddress } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus, Offsets, Versions, SelfTestResult } from './types';
@@ -183,13 +182,13 @@ export class BNO055 {
 
   async getQuat() {
     const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
-    const w = ((buffer[1]) << 8) | (buffer[0]);
-    const x = ((buffer[3]) << 8) | (buffer[2]);
-    const y = ((buffer[5]) << 8) | (buffer[4]);
-    const z = ((buffer[7]) << 8) | (buffer[6]);
-
     const scale = (1.0 / (1 << 14));
 
-    return quat.fromValues(scale * w, scale * x, scale * y, scale * z);
+    return {
+      w: scale * (((buffer[1]) << 8) | (buffer[0])),
+      x: scale * (((buffer[3]) << 8) | (buffer[2])),
+      y: scale * (((buffer[5]) << 8) | (buffer[4])),
+      z: scale * (((buffer[7]) << 8) | (buffer[6])),
+    };
   }
 }
