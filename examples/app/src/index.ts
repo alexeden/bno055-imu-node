@@ -70,6 +70,7 @@ wss.on('connection', async (socket, req) => {
   // );
 
   console.log('new connection, client size is ', wss.clients.size);
+
   if (!imu) {
     // dotstar = Dotstar.create(config);
     // dotstar.setAll(0);
@@ -78,18 +79,16 @@ wss.on('connection', async (socket, req) => {
     imu = imu || await BNO055.begin(DeviceAddress.A, OpMode.FullFusion);
 
     const sendData = async () => {
-      console.log(`there are ${liveClients.size} clients`);
       if (liveClients.size > 0) {
         const quat = await imu!.getQuat();
         const quatJson = JSON.stringify(quat);
         liveClients.forEach(client => {
-          console.log('sending data to client: ', quatJson);
           client.send(quatJson);
         });
       }
     };
 
-    setInterval(sendData, 1000);
+    setInterval(sendData, 10);
     // console.log(dotstar && dotstar.printBuffer());
   }
   liveClients.add(socket);
