@@ -1,0 +1,5 @@
+.DS_Store
+.editorconfig
+nodemon*
+sync.js
+docs/*
