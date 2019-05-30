@@ -17,7 +17,19 @@
     "url": "git+https://github.com/alexeden/bno055-imu-node.git"
   },
   "author": "Alex Eden",
-  "license": "ISC",
+  "license": "MITNFA",
+  "keywords": [
+    "iot",
+    "raspberry",
+    "raspberrypi",
+    "sensor",
+    "pi",
+    "rpi",
+    "beaglebone",
+    "bno055",
+    "imu",
+    "i2c"
+  ],
   "bugs": {
     "url": "https://github.com/alexeden/bno055-imu-node/issues"
   },
