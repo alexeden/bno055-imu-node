@@ -1,5 +1,5 @@
 import { quat } from 'gl-matrix';
-import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, Power, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT } from './constants';
+import { OpMode, BNO055_ID, Reg, BNO055_ADDRESS_A, PowerLevel, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT } from './constants';
 import { I2cHelper } from './i2c-helper';
 import { CalibrationStatus, Offsets, Versions } from './types';
 
@@ -9,7 +9,7 @@ const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 export class BNO055 {
 
   static async begin(
-    mode: OpMode = OpMode.OPERATION_MODE_NDOF,
+    mode: OpMode = OpMode.Full,
     useXtal = false
   ): Promise<BNO055> {
     console.log('begin BNO055');
@@ -17,9 +17,9 @@ export class BNO055 {
     console.log('bus open');
     const device = new BNO055(bus);
     await device.verifyConnection();
-    await device.setMode(OpMode.OPERATION_MODE_CONFIG);
+    await device.setMode(OpMode.Config);
     await device.resetSystem();
-    await device.setNormalPowerMode();
+    await device.setPowerLevel();
 
     await device.verifyConnection();
     await device.resetSystem(); // why?
@@ -30,7 +30,7 @@ export class BNO055 {
     return device;
   }
 
-  mode: OpMode = OpMode.OPERATION_MODE_CONFIG;
+  mode: OpMode = OpMode.Config;
 
   private constructor(
     private readonly bus: I2cHelper
@@ -67,7 +67,7 @@ export class BNO055 {
     if (await this.isFullyCalibrated()) {
       const savedMode = this.mode;
       /* Switch to config mode (just in case since this is the default) */
-      await this.setMode(OpMode.OPERATION_MODE_CONFIG);
+      await this.setMode(OpMode.Config);
 
       const offsets: Offsets = {
         /* Accel offset range depends on the G-range:
@@ -137,15 +137,15 @@ export class BNO055 {
     mode: OpMode
   ) {
     await this.bus.writeByte(Reg.OPR_MODE, mode);
-    await wait(mode === OpMode.OPERATION_MODE_CONFIG ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
+    await wait(mode === OpMode.Config ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
     this.mode = mode;
     console.log('mode set: ', mode);
   }
 
-  async setNormalPowerMode() {
-    await this.bus.writeByte(Reg.PWR_MODE, Power.POWER_MODE_NORMAL);
+  async setPowerLevel(level = PowerLevel.Normal) {
+    await this.bus.writeByte(Reg.PWR_MODE, level);
     await this.bus.writeByte(Reg.PAGE_ID, 0);
-    console.log('power mode set to ', Power.POWER_MODE_NORMAL);
+    console.log('power mode set to ', level);
   }
 
 
@@ -155,7 +155,7 @@ export class BNO055 {
   async useExternalCrystal(usextal: boolean) {
     const savedMode = this.mode;
     /* Switch to config mode (just in case since this is the default) */
-    await this.setMode(OpMode.OPERATION_MODE_CONFIG);
+    await this.setMode(OpMode.Config);
     await this.bus.writeByte(Reg.PAGE_ID, 0);
     await this.bus.writeByte(Reg.SYS_TRIGGER, usextal ? 0x80 : 0x00);
     /* Set the requested operating mode (see section 3.3) */
@@ -163,7 +163,7 @@ export class BNO055 {
   }
 
   get inConfigMode() {
-    return this.mode === OpMode.OPERATION_MODE_CONFIG;
+    return this.mode === OpMode.Config;
   }
 
   /**
@@ -190,20 +190,20 @@ export class BNO055 {
     const { sys, accel, gyro, mag } = await this.getCalibration();
 
     switch (this.mode) {
-      case OpMode.OPERATION_MODE_ACCONLY:
+      case OpMode.AccelOnly:
         return accel === 3;
-      case OpMode.OPERATION_MODE_MAGONLY:
+      case OpMode.MagOnly:
         return mag === 3;
-      case OpMode.OPERATION_MODE_GYRONLY:
-      case OpMode.OPERATION_MODE_M4G:
+      case OpMode.GyroOnly:
+      case OpMode.ImuMagForGyro:
         return gyro === 3;
-      case OpMode.OPERATION_MODE_ACCMAG:
-      case OpMode.OPERATION_MODE_COMPASS:
+      case OpMode.AccelMag:
+      case OpMode.Compass:
         return accel === 3 && mag === 3;
-      case OpMode.OPERATION_MODE_ACCGYRO:
-      case OpMode.OPERATION_MODE_IMUPLUS:
+      case OpMode.AccelGyro:
+      case OpMode.Imu:
         return accel === 3 && gyro === 3;
-      case OpMode.OPERATION_MODE_MAGGYRO:
+      case OpMode.MagGyro:
         return mag === 3 && gyro === 3;
       default:
         return sys === 3 && gyro === 3 && accel === 3 && mag === 3;

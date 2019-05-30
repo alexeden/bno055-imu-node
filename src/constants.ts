@@ -157,28 +157,30 @@ export enum Reg {
 }
 
 
-/** BNO055 power settings */
-export enum Power {
-  POWER_MODE_NORMAL = 0X00,
-  POWER_MODE_LOWPOWER = 0X01,
-  POWER_MODE_SUSPEND = 0X02,
+/** BNO055 power levels */
+export enum PowerLevel {
+  Normal,
+  Low,
+  Suspend,
 }
 
 /** Operation mode settings */
 export enum OpMode {
-  OPERATION_MODE_CONFIG = 0X00,
-  OPERATION_MODE_ACCONLY = 0X01,
-  OPERATION_MODE_MAGONLY = 0X02,
-  OPERATION_MODE_GYRONLY = 0X03,
-  OPERATION_MODE_ACCMAG = 0X04,
-  OPERATION_MODE_ACCGYRO = 0X05,
-  OPERATION_MODE_MAGGYRO = 0X06,
-  OPERATION_MODE_AMG = 0X07,
-  OPERATION_MODE_IMUPLUS = 0X08,
-  OPERATION_MODE_COMPASS = 0X09,
-  OPERATION_MODE_M4G = 0X0A,
-  OPERATION_MODE_NDOF_FMC_OFF = 0X0B,
-  OPERATION_MODE_NDOF = 0X0C,
+  Config = 0X00,
+  /** Non-fusion */
+  AccelOnly = 0X01,
+  MagOnly = 0X02,
+  GyroOnly = 0X03,
+  AccelMag = 0X04,
+  AccelGyro = 0X05,
+  MagGyro = 0X06,
+  AccelMagGyro = 0X07,
+  /** Fusion */
+  Imu = 0X08,
+  Compass = 0X09,
+  ImuMagForGyro = 0X0A,
+  FullFmcOff = 0X0B,
+  Full = 0X0C,
 }
 
 /** Remap settings */
