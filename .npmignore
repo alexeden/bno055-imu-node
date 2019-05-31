@@ -4,3 +4,6 @@ nodemon*
 sync.js
 docs/*
 examples/*
+sync.config.json
+tslint.json
+tsconfig.json
