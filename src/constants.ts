@@ -14,6 +14,15 @@ export enum PowerLevel {
   Suspend,
 }
 
+export enum EulerUnitScale {
+  Degs = 16,
+  Rads = 900,
+}
+export enum TempUnitScale {
+  C = 1,
+  F = 1 / 2,
+}
+
 /** Operation modes */
 export enum OpMode {
   Config = 0X00,

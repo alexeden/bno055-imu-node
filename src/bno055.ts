@@ -1,6 +1,22 @@
-import { OpMode, BNO055_ID, Reg, PowerLevel, BNO055_CONFIG_MODE_WAIT, BNO055_MODE_SWITCH_WAIT, DeviceAddress } from './constants';
+import {
+  BNO055_CONFIG_MODE_WAIT,
+  BNO055_ID,
+  BNO055_MODE_SWITCH_WAIT,
+  DeviceAddress,
+  EulerUnitScale,
+  OpMode,
+  PowerLevel,
+  Reg,
+  TempUnitScale,
+} from './constants';
 import { I2cHelper } from './i2c-helper';
-import { CalibrationStatus, Offsets, Versions, SelfTestResult } from './types';
+import {
+  CalibrationStatus,
+  Offsets,
+  SelfTestResult,
+  SensorUnits,
+  Versions,
+} from './types';
 
 
 const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
@@ -18,11 +34,18 @@ export class BNO055 {
     await device.resetSystem(); // why?
     await device.setMode(mode);
     await device.useExternalClock();
+    await device.getUnits();
 
     return device;
   }
 
   mode: OpMode = OpMode.Config;
+  units: SensorUnits = {
+    accel: 'mps2',
+    euler: 'deg',
+    gyro: 'degps',
+    temp: 'c',
+  };
 
   private constructor(
     private readonly bus: I2cHelper
@@ -40,7 +63,6 @@ export class BNO055 {
     await this.bus.writeByte(Reg.SYS_TRIGGER, 0x20);
     await wait(2000);
     await this.setMode(savedMode);
-    console.log('device reset');
   }
 
   async getPage() {
@@ -81,6 +103,19 @@ export class BNO055 {
     else {
       return;
     }
+  }
+
+  async getUnits(): Promise<SensorUnits> {
+    const unitByte = await this.bus.readByte(Reg.UNIT_SEL);
+
+    this.units = {
+      accel: unitByte & 0x1 ? 'mg' : 'mps2',
+      euler: (unitByte >> 2) & 0x1 ? 'rad' : 'deg',
+      gyro: (unitByte >> 1) & 0x1 ? 'radps' : 'degps',
+      temp: (unitByte >> 4) & 0x1 ? 'f' : 'c',
+    };
+
+    return { ...this.units };
   }
 
   async getVersions(): Promise<Versions> {

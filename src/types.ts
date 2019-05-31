@@ -38,3 +38,10 @@ export interface SelfTestResult {
   accelPassed: boolean;
   gyroPassed: boolean;
 }
+
+export interface SensorUnits {
+  accel: 'mps2' | 'mg';
+  euler: 'deg' | 'rad';
+  gyro: 'degps' | 'radps';
+  temp: 'c' | 'f';
+}
