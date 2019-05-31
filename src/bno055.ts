@@ -99,9 +99,7 @@ export class BNO055 {
     return (await this.bus.readByte(Reg.OPR_MODE)) & 0xF;
   }
 
-  async setMode(
-    mode: OpMode
-  ) {
+  async setMode(mode: OpMode) {
     await this.bus.writeByte(Reg.OPR_MODE, mode);
     await wait(mode === OpMode.Config ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
     this.mode = mode;
@@ -116,7 +114,10 @@ export class BNO055 {
   }
 
   async getTemperature() {
-    return this.bus.readByte(Reg.TEMP);
+    const tempByte = await this.bus.readByte(Reg.TEMP);
+    const temp = Buffer.of(tempByte).readInt8(0);
+
+    return temp * (this.units.temp === 'c' ? TempUnitScale.C : TempUnitScale.F);
   }
 
   async getSelfTestResults(): Promise<SelfTestResult> {
@@ -192,13 +193,14 @@ export class BNO055 {
 
   async getQuat() {
     const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
+
     const scale = (1.0 / (1 << 14));
 
     return {
-      w: scale * (((buffer[1]) << 8) | (buffer[0])),
-      x: scale * (((buffer[3]) << 8) | (buffer[2])),
-      y: scale * (((buffer[5]) << 8) | (buffer[4])),
-      z: scale * (((buffer[7]) << 8) | (buffer[6])),
+      w: scale * buffer.readInt16LE(0),
+      x: scale * buffer.readInt16LE(2),
+      y: scale * buffer.readInt16LE(4),
+      z: scale * buffer.readInt16LE(6),
     };
   }
 }
