@@ -176,6 +176,20 @@ export class BNO055 {
     }
   }
 
+  async getEuler() {
+    const buffer = await this.bus.readBlock(Reg.EULER_H_LSB, 6);
+
+    const scale = this.units.euler === 'deg'
+      ? 1 / EulerUnitScale.Degs
+      : 1 / EulerUnitScale.Rads;
+
+    return {
+      h: scale * buffer.readInt16LE(0),
+      r: scale * buffer.readInt16LE(2),
+      p: scale * buffer.readInt16LE(4),
+    };
+  }
+
   async getQuat() {
     const buffer = await this.bus.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
     const scale = (1.0 / (1 << 14));
