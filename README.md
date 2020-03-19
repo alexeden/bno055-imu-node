@@ -29,7 +29,7 @@ import {
   );
 
   // Get the sensors' calibration status
-  const calibration = await imu.getCalibration();
+  const calibration = await imu.getCalibrationStatuses();
 
   // Check to see if the device is fully calibrated
   const isCalibrated = await imu.isFullyCalibrated();

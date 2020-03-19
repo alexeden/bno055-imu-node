@@ -16,7 +16,7 @@ const { BNO055, OpMode, DeviceAddress } = require('../dist');
       console.log('units: ', await imu.getUnits());
       console.log('euler: ', await imu.getEuler());
       console.log('quat: ', await imu.getQuat());
-      console.log('calibration: ', await imu.getCalibration());
+      console.log('calibration: ', await imu.getCalibrationStatuses());
       console.log('is calibrated: ', await imu.isFullyCalibrated());
       console.log('offsets: ', await imu.getSensorOffsets());
       setTimeout(printQuat, 3333);
