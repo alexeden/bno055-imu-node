@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build-changes": "echo 'Source will rebuild on changes' && nodemon --config nodemon.build.json",
+    "test-changes": "echo 'Source will rebuild and retest on changes' && nodemon --config nodemon.test.json",
     "build": "rimraf dist && tsc -p src",
     "build-app": "(cd examples/app && rimraf dist && tsc -p src)",
     "test": "ts-node -P examples/tsconfig.json",

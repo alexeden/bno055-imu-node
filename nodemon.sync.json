@@ -1,5 +1,5 @@
 {
-  "ext": "ts,json,cc,h,gyp",
+  "ext": "ts,json,js",
   "exec": "npm run sync",
   "events": {},
   "watch": [

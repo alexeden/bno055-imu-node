@@ -2,7 +2,7 @@ const { BNO055, OpMode, DeviceAddress } = require('../dist');
 
 (async () => {
   try {
-    const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, true);
+    const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 1);
 
     const printQuat = async () => {
       console.log('current mode: ', await imu.getMode());
