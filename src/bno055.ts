@@ -9,14 +9,10 @@ import {
   PowerLevel,
   Reg,
   TempUnitScale,
+  SystemError,
+  SystemStatus,
 } from './constants';
-import {
-  CalibrationStatus,
-  Offsets,
-  SelfTestResult,
-  SensorUnits,
-  Versions,
-} from './types';
+import { CalibrationStatusMap, Offsets, SelfTestResult, SensorUnits, Versions } from './types';
 
 const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 
@@ -70,11 +66,11 @@ export class BNO055 {
     return await this.bus.readByte(this.address, Reg.PAGE_ID) & 0x1;
   }
 
-  async getSystemStatus() {
+  async getSystemStatus(): Promise<SystemStatus> {
     return await this.bus.readByte(this.address, Reg.SYS_STAT) & 0x7;
   }
 
-  async getSystemError() {
+  async getSystemError(): Promise<SystemError> {
     return await this.bus.readByte(this.address, Reg.SYS_ERR) & 0xF;
   }
 
@@ -131,7 +127,7 @@ export class BNO055 {
     return { device, accel, mag, gyro, software, bootloader };
   }
 
-  async getMode() {
+  async getMode(): Promise<OpMode> {
     return (await this.bus.readByte(this.address, Reg.OPR_MODE)) & 0xF;
   }
 
@@ -175,7 +171,7 @@ export class BNO055 {
     await this.setMode(savedMode);
   }
 
-  async getCalibration(): Promise<CalibrationStatus> {
+  async getCalibrationStatuses(): Promise<CalibrationStatusMap> {
     const calByte = await this.bus.readByte(this.address, Reg.CALIB_STAT);
 
     return {
@@ -190,7 +186,7 @@ export class BNO055 {
    * Checks that all relevant calibration status values are set to 3 (fully calibrated)
    */
   async isFullyCalibrated() {
-    const { sys, accel, gyro, mag } = await this.getCalibration();
+    const { sys, accel, gyro, mag } = await this.getCalibrationStatuses();
 
     switch (this.mode) {
       case OpMode.AccelOnly:
@@ -239,8 +235,6 @@ export class BNO055 {
       z: scale * buffer.readInt16LE(6),
     };
   }
-
-  static readonly blockToDoubleByte = ([lsb, msb]: Buffer) => (msb << 8) | lsb;
 
   private async readDoubleByte(reg: number) {
     const [lsb, msb] = await this.readBlock(reg, 2);
