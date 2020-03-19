@@ -1,8 +1,10 @@
-export interface CalibrationStatus {
-  sys: number;
-  gyro: number;
-  accel: number;
-  mag: number;
+import { CalibrationStatus } from './constants';
+
+export interface CalibrationStatusMap {
+  sys: CalibrationStatus;
+  gyro: CalibrationStatus;
+  accel: CalibrationStatus;
+  mag: CalibrationStatus;
 }
 
 export interface Versions {

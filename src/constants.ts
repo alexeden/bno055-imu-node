@@ -2,6 +2,11 @@ export const BNO055_ID = 0xA0;
 export const BNO055_CONFIG_MODE_WAIT = 20;
 export const BNO055_MODE_SWITCH_WAIT = 8;
 
+export enum CalibrationStatus {
+  NotCalibrated = 0,
+  FullyCalibrated = 3,
+}
+
 export enum DeviceAddress {
   A = 0x28,
   B = 0x29,
@@ -13,10 +18,35 @@ export enum PowerLevel {
   Suspend,
 }
 
+export enum SystemError {
+  None,
+  PeripheralInitialization,
+  SystemInitialization,
+  SelfTestResultFailed,
+  RegisterMapValueOutOfRange,
+  RegisterMapAddressOutOfRange,
+  RegisterMapWrite,
+  BnoLowPowerModeNotAvailableForSelectedOperationMode,
+  AccelerometerPowerModeNotAvailable,
+  FusionAlgorithmConfiguration,
+  SensorConfiguration,
+}
+
+export enum SystemStatus {
+  Idle,
+  Error,
+  InitializingPeripherals,
+  Initialization,
+  ExecutingSelftest,
+  RunningWithFusionAlgorithm,
+  RunningWithoutFusionAlgorithm,
+}
+
 export enum EulerUnitScale {
   Degs = 16,
   Rads = 900,
 }
+
 export enum TempUnitScale {
   C = 1,
   F = 1 / 2,
