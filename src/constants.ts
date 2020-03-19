@@ -1,12 +1,11 @@
+export const BNO055_ID = 0xA0;
+export const BNO055_CONFIG_MODE_WAIT = 20;
+export const BNO055_MODE_SWITCH_WAIT = 8;
+
 export enum DeviceAddress {
   A = 0x28,
   B = 0x29,
 }
-
-export const BNO055_ID = 0xA0;
-
-export const BNO055_CONFIG_MODE_WAIT = 20;
-export const BNO055_MODE_SWITCH_WAIT = 8;
 
 export enum PowerLevel {
   Normal,
