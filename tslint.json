@@ -99,7 +99,6 @@
     ],
     "no-unnecessary-initializer": true,
     "no-unused-expression": false,
-    "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [

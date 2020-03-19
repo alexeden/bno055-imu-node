@@ -30,24 +30,25 @@
     "beaglebone",
     "bno055",
     "imu",
-    "i2c"
+    "i2c",
+    "adafruit"
   ],
   "bugs": {
     "url": "https://github.com/alexeden/bno055-imu-node/issues"
   },
   "homepage": "https://github.com/alexeden/bno055-imu-node#readme",
   "devDependencies": {
-    "@types/i2c-bus": "^1.0.22",
-    "@types/node": "^12.0.2",
-    "chalk": "^2.4.2",
-    "nodemon": "^1.19.1",
-    "rimraf": "^2.6.3",
+    "@types/i2c-bus": "^5.1.0",
+    "@types/node": "^13.9.2",
+    "chalk": "^3.0.0",
+    "nodemon": "^2.0.2",
+    "rimraf": "^3.0.2",
     "rsync": "^0.6.1",
-    "ts-node": "^8.2.0",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5"
+    "ts-node": "^8.7.0",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "i2c-bus": "^4.0.9"
+    "i2c-bus": "^5.1.0"
   }
 }
