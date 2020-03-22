@@ -48,30 +48,61 @@ export class BNO055 {
     readonly address: number
   ) { }
 
-  async verifyConnection() {
-    if (await this.bus.readByte(this.address, Reg.DEVICE_ID) !== BNO055_ID) {
-      throw new Error(`Device does not seem to be connected`);
-    }
+  async getCalibrationStatuses(): Promise<CalibrationStatusMap> {
+    const calByte = await this.bus.readByte(this.address, Reg.CALIB_STAT);
+
+    return {
+      sys: (calByte >> 6) & 0x03,
+      gyro: (calByte >> 4) & 0x03,
+      accel: (calByte >> 2) & 0x03,
+      mag: calByte & 0x03,
+    };
   }
 
-  async resetSystem() {
-    const savedMode = this.mode;
-    await this.setMode(OpMode.Config);
-    await this.bus.writeByte(this.address, Reg.SYS_TRIGGER, 0x20);
-    await wait(2000);
-    await this.setMode(savedMode);
+  async getEuler() {
+    const buffer = await this.readBlock(Reg.EULER_H_LSB, 6);
+
+    const scale = this.units.euler === 'deg'
+      ? 1 / EulerUnitScale.Degs
+      : 1 / EulerUnitScale.Rads;
+
+    return {
+      h: scale * buffer.readInt16LE(0),
+      r: scale * buffer.readInt16LE(2),
+      p: scale * buffer.readInt16LE(4),
+    };
+  }
+
+  async getMode(): Promise<OpMode> {
+    return (await this.bus.readByte(this.address, Reg.OPR_MODE)) & 0xF;
   }
 
   async getPage() {
     return await this.bus.readByte(this.address, Reg.PAGE_ID) & 0x1;
   }
 
-  async getSystemStatus(): Promise<SystemStatus> {
-    return await this.bus.readByte(this.address, Reg.SYS_STAT) & 0x7;
+  async getQuat() {
+    const buffer = await this.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
+
+    const scale = (1.0 / (1 << 14));
+
+    return {
+      w: scale * buffer.readInt16LE(0),
+      x: scale * buffer.readInt16LE(2),
+      y: scale * buffer.readInt16LE(4),
+      z: scale * buffer.readInt16LE(6),
+    };
   }
 
-  async getSystemError(): Promise<SystemError> {
-    return await this.bus.readByte(this.address, Reg.SYS_ERR) & 0xF;
+  async getSelfTestResults(): Promise<SelfTestResult> {
+    const selfTest = await this.bus.readByte(this.address, Reg.SELFTEST_RESULT);
+
+    return {
+      mcuPassed: (selfTest >> 3 & 0x1) === 1,
+      magPassed: (selfTest >> 2 & 0x1) === 1,
+      accelPassed: (selfTest >> 1 & 0x1) === 1,
+      gyroPassed: (selfTest & 0x1) === 1,
+    };
   }
 
   async getSensorOffsets(): Promise<Offsets | undefined> {
@@ -102,6 +133,21 @@ export class BNO055 {
     }
   }
 
+  async getSystemError(): Promise<SystemError> {
+    return await this.bus.readByte(this.address, Reg.SYS_ERR) & 0xF;
+  }
+
+  async getSystemStatus(): Promise<SystemStatus> {
+    return await this.bus.readByte(this.address, Reg.SYS_STAT) & 0x7;
+  }
+
+  async getTemperature() {
+    const tempByte = await this.bus.readByte(this.address, Reg.TEMP);
+    const temp = Buffer.of(tempByte).readInt8(0);
+
+    return temp * (this.units.temp === 'c' ? TempUnitScale.C : TempUnitScale.F);
+  }
+
   async getUnits(): Promise<SensorUnits> {
     const unitByte = await this.bus.readByte(this.address, Reg.UNIT_SEL);
 
@@ -125,61 +171,6 @@ export class BNO055 {
     const software = `${swMsb >> 4}.${swMsb & 0xF}.${swLsb >> 4}.${swLsb & 0xF}`;
 
     return { device, accel, mag, gyro, software, bootloader };
-  }
-
-  async getMode(): Promise<OpMode> {
-    return (await this.bus.readByte(this.address, Reg.OPR_MODE)) & 0xF;
-  }
-
-  async setMode(mode: OpMode) {
-    await this.bus.writeByte(this.address, Reg.OPR_MODE, mode);
-    await wait(mode === OpMode.Config ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
-    this.mode = mode;
-  }
-
-  async setPowerLevel(level = PowerLevel.Normal) {
-    const savedMode = this.mode;
-    await this.setMode(OpMode.Config);
-    await this.bus.writeByte(this.address, Reg.PWR_MODE, level);
-    await this.bus.writeByte(this.address, Reg.PAGE_ID, 0);
-    await this.setMode(savedMode);
-  }
-
-  async getTemperature() {
-    const tempByte = await this.bus.readByte(this.address, Reg.TEMP);
-    const temp = Buffer.of(tempByte).readInt8(0);
-
-    return temp * (this.units.temp === 'c' ? TempUnitScale.C : TempUnitScale.F);
-  }
-
-  async getSelfTestResults(): Promise<SelfTestResult> {
-    const selfTest = await this.bus.readByte(this.address, Reg.SELFTEST_RESULT);
-
-    return {
-      mcuPassed: (selfTest >> 3 & 0x1) === 1,
-      magPassed: (selfTest >> 2 & 0x1) === 1,
-      accelPassed: (selfTest >> 1 & 0x1) === 1,
-      gyroPassed: (selfTest & 0x1) === 1,
-    };
-  }
-
-  async useExternalClock() {
-    const savedMode = this.mode;
-    await this.setMode(OpMode.Config);
-    await this.bus.writeByte(this.address, Reg.PAGE_ID, 0);
-    await this.bus.writeByte(this.address, Reg.SYS_TRIGGER, 0x80);
-    await this.setMode(savedMode);
-  }
-
-  async getCalibrationStatuses(): Promise<CalibrationStatusMap> {
-    const calByte = await this.bus.readByte(this.address, Reg.CALIB_STAT);
-
-    return {
-      sys: (calByte >> 6) & 0x03,
-      gyro: (calByte >> 4) & 0x03,
-      accel: (calByte >> 2) & 0x03,
-      mag: calByte & 0x03,
-    };
   }
 
   /**
@@ -209,33 +200,45 @@ export class BNO055 {
     }
   }
 
-  async getEuler() {
-    const buffer = await this.readBlock(Reg.EULER_H_LSB, 6);
-
-    const scale = this.units.euler === 'deg'
-      ? 1 / EulerUnitScale.Degs
-      : 1 / EulerUnitScale.Rads;
-
-    return {
-      h: scale * buffer.readInt16LE(0),
-      r: scale * buffer.readInt16LE(2),
-      p: scale * buffer.readInt16LE(4),
-    };
+  async resetSystem() {
+    const savedMode = this.mode;
+    await this.setMode(OpMode.Config);
+    await this.bus.writeByte(this.address, Reg.SYS_TRIGGER, 0x20);
+    await wait(2000);
+    await this.setMode(savedMode);
   }
 
-  async getQuat() {
-    const buffer = await this.readBlock(Reg.QUATERNION_DATA_W_LSB, 8);
-
-    const scale = (1.0 / (1 << 14));
-
-    return {
-      w: scale * buffer.readInt16LE(0),
-      x: scale * buffer.readInt16LE(2),
-      y: scale * buffer.readInt16LE(4),
-      z: scale * buffer.readInt16LE(6),
-    };
+  async setMode(mode: OpMode) {
+    await this.bus.writeByte(this.address, Reg.OPR_MODE, mode);
+    await wait(mode === OpMode.Config ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
+    this.mode = mode;
   }
 
+  async setPowerLevel(level = PowerLevel.Normal) {
+    const savedMode = this.mode;
+    await this.setMode(OpMode.Config);
+    await this.bus.writeByte(this.address, Reg.PWR_MODE, level);
+    await this.bus.writeByte(this.address, Reg.PAGE_ID, 0);
+    await this.setMode(savedMode);
+  }
+
+  async useExternalClock() {
+    const savedMode = this.mode;
+    await this.setMode(OpMode.Config);
+    await this.bus.writeByte(this.address, Reg.PAGE_ID, 0);
+    await this.bus.writeByte(this.address, Reg.SYS_TRIGGER, 0x80);
+    await this.setMode(savedMode);
+  }
+
+  async verifyConnection() {
+    if (await this.bus.readByte(this.address, Reg.DEVICE_ID) !== BNO055_ID) {
+      throw new Error(`Device does not seem to be connected`);
+    }
+  }
+
+  /**
+   * I2C Helper Methods
+   */
   private async readDoubleByte(reg: number) {
     const [lsb, msb] = await this.readBlock(reg, 2);
 
