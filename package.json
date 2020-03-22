@@ -1,6 +1,6 @@
 {
   "name": "bno055-imu-node",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Interact with a BNO055 IMU from your Node.js app",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
