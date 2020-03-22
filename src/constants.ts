@@ -2,6 +2,18 @@ export const BNO055_ID = 0xA0;
 export const BNO055_CONFIG_MODE_WAIT = 20;
 export const BNO055_MODE_SWITCH_WAIT = 8;
 
+export enum Axis {
+  X,
+  Y,
+  Z,
+  Invalid,
+}
+
+export enum AxisSign {
+  Positive,
+  Negative,
+}
+
 export enum CalibrationStatus {
   NotCalibrated = 0,
   FullyCalibrated = 3,

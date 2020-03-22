@@ -1,4 +1,19 @@
-import { CalibrationStatus } from './constants';
+import { Axis, AxisSign, CalibrationStatus } from './constants';
+
+export interface AxisMapping {
+  X: {
+    axis: Axis;
+    sign: AxisSign;
+  };
+  Y: {
+    axis: Axis;
+    sign: AxisSign;
+  };
+  Z: {
+    axis: Axis;
+    sign: AxisSign;
+  };
+}
 
 export interface CalibrationStatusMap {
   sys: CalibrationStatus;
