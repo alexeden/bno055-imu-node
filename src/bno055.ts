@@ -51,12 +51,11 @@ export class BNO055 {
   async getAxisMapping(): Promise<AxisMapping> {
     const axisMaps = await this.bus.readByte(this.address, Reg.AXIS_MAP_CONFIG);
     const axisSigns = await this.bus.readByte(this.address, Reg.AXIS_MAP_SIGN);
-    console.log(`signs: ${axisSigns.toString(2)}, maps: ${axisMaps.toString(2)}`);
 
     return {
       X: {
         axis: axisMaps & 0x3,
-        sign: axisSigns & 0x1,
+        sign: axisSigns >> 2 & 0x1,
       },
       Y: {
         axis: axisMaps >> 2 & 0x3,
@@ -64,7 +63,7 @@ export class BNO055 {
       },
       Z: {
         axis: axisMaps >> 4 & 0x3,
-        sign: axisSigns >> 2 & 0x1,
+        sign: axisSigns & 0x1,
       },
     };
   }
@@ -230,10 +229,13 @@ export class BNO055 {
   }
 
   async setAxisMapping({ X, Y, Z }: AxisMapping) {
-    const axisMaps = (X.axis << 4) | (Y.axis << 2) | X.axis;
+    const savedMode = this.mode;
+    await this.setMode(OpMode.Config);
+    const axisMaps = (Z.axis << 4) | (Y.axis << 2) | X.axis;
     const axisSigns = (X.sign << 2) | (Y.sign << 1) | Z.sign;
     await this.bus.writeByte(this.address, Reg.AXIS_MAP_CONFIG, axisMaps);
-    await this.bus.writeByte(this.address, Reg.AXIS_MAP_SIGN, axisSigns);
+    await this.bus.writeByte(this.address, Reg.AXIS_MAP_SIGN, axisSigns & 0x7);
+    await this.setMode(savedMode);
   }
 
   async setMode(mode: OpMode) {

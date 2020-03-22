@@ -1,10 +1,26 @@
-const { BNO055, OpMode, DeviceAddress } = require('../dist');
+const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
 
 (async () => {
   try {
     const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 1);
+    await imu.resetSystem();
+    await imu.setAxisMapping({
+      X: {
+        axis: Axis.X,
+        sign: AxisSign.Positive,
+      },
+      Y: {
+        axis: Axis.Z,
+        sign: AxisSign.Negative,
+      },
+      Z: {
+        axis: Axis.Y,
+        sign: AxisSign.Positive,
+      },
+    });
 
-    const printQuat = async () => {
+    const printEverything = async () => {
+
       console.log('current mode: ', await imu.getMode());
       console.log('current page: ', await imu.getPage());
       console.log('system status: ', await imu.getSystemStatus());
@@ -20,10 +36,10 @@ const { BNO055, OpMode, DeviceAddress } = require('../dist');
       console.log('calibration: ', await imu.getCalibrationStatuses());
       console.log('is calibrated: ', await imu.isFullyCalibrated());
       console.log('offsets: ', await imu.getSensorOffsets());
-      setTimeout(printQuat, 3333);
+      setTimeout(printEverything, 3333);
     };
 
-    await printQuat();
+    await printEverything();
 
   }
   catch (error) {
