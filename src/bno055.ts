@@ -8,11 +8,11 @@ import {
   OpMode,
   PowerLevel,
   Reg,
-  TempUnitScale,
   SystemError,
   SystemStatus,
+  TempUnitScale,
 } from './constants';
-import { CalibrationStatusMap, Offsets, SelfTestResult, SensorUnits, Versions } from './types';
+import { CalibrationStatusMap, Offsets, SelfTestResult, SensorUnits, Versions, AxisMapping } from './types';
 
 const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 
@@ -47,6 +47,27 @@ export class BNO055 {
     private readonly bus: i2c.PromisifiedBus,
     readonly address: number
   ) { }
+
+  async getAxisMapping(): Promise<AxisMapping> {
+    const axisMaps = await this.bus.readByte(this.address, Reg.AXIS_MAP_CONFIG);
+    const axisSigns = await this.bus.readByte(this.address, Reg.AXIS_MAP_SIGN);
+    console.log(`signs: ${axisSigns.toString(2)}, maps: ${axisMaps.toString(2)}`);
+
+    return {
+      X: {
+        axis: axisMaps & 0x3,
+        sign: axisSigns & 0x1,
+      },
+      Y: {
+        axis: axisMaps >> 2 & 0x3,
+        sign: axisSigns >> 1 & 0x1,
+      },
+      Z: {
+        axis: axisMaps >> 4 & 0x3,
+        sign: axisSigns >> 2 & 0x1,
+      },
+    };
+  }
 
   async getCalibrationStatuses(): Promise<CalibrationStatusMap> {
     const calByte = await this.bus.readByte(this.address, Reg.CALIB_STAT);

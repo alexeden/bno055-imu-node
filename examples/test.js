@@ -12,6 +12,7 @@ const { BNO055, OpMode, DeviceAddress } = require('../dist');
       console.log('temp: ', await imu.getTemperature());
       console.log('self-test results: ', await imu.getSelfTestResults());
 
+      console.log('axis mapping: ', await imu.getAxisMapping());
       console.log('versions: ', await imu.getVersions());
       console.log('units: ', await imu.getUnits());
       console.log('euler: ', await imu.getEuler());
