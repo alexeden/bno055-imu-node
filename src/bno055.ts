@@ -229,6 +229,13 @@ export class BNO055 {
     await this.setMode(savedMode);
   }
 
+  async setAxisMapping({ X, Y, Z }: AxisMapping) {
+    const axisMaps = (X.axis << 4) | (Y.axis << 2) | X.axis;
+    const axisSigns = (X.sign << 2) | (Y.sign << 1) | Z.sign;
+    await this.bus.writeByte(this.address, Reg.AXIS_MAP_CONFIG, axisMaps);
+    await this.bus.writeByte(this.address, Reg.AXIS_MAP_SIGN, axisSigns);
+  }
+
   async setMode(mode: OpMode) {
     await this.bus.writeByte(this.address, Reg.OPR_MODE, mode);
     await wait(mode === OpMode.Config ? BNO055_CONFIG_MODE_WAIT : BNO055_MODE_SWITCH_WAIT);
