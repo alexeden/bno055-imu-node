@@ -27,7 +27,6 @@ export class BNO055 {
     const device = new BNO055(bus, address);
 
     await device.verifyConnection();
-    await device.resetSystem(); // why?
     await device.setMode(mode);
     await device.useExternalClock();
     await device.getUnits();
@@ -94,7 +93,10 @@ export class BNO055 {
   }
 
   async getMode(): Promise<OpMode> {
-    return (await this.bus.readByte(this.address, Reg.OPR_MODE)) & 0xF;
+    const mode = (await this.bus.readByte(this.address, Reg.OPR_MODE)) & 0xF;
+    this.mode = mode;
+
+    return mode;
   }
 
   async getPage() {

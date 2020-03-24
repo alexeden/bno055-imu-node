@@ -4,20 +4,20 @@ const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
   try {
     const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 1);
     await imu.resetSystem();
-    await imu.setAxisMapping({
-      X: {
-        axis: Axis.X,
-        sign: AxisSign.Positive,
-      },
-      Y: {
-        axis: Axis.Z,
-        sign: AxisSign.Negative,
-      },
-      Z: {
-        axis: Axis.Y,
-        sign: AxisSign.Positive,
-      },
-    });
+    // await imu.setAxisMapping({
+    //   X: {
+    //     axis: Axis.X,
+    //     sign: AxisSign.Positive,
+    //   },
+    //   Y: {
+    //     axis: Axis.Z,
+    //     sign: AxisSign.Negative,
+    //   },
+    //   Z: {
+    //     axis: Axis.Y,
+    //     sign: AxisSign.Positive,
+    //   },
+    // });
 
     const printEverything = async () => {
 
