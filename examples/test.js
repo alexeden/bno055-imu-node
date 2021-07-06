@@ -1,8 +1,8 @@
-const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
+const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../src');
 
 (async () => {
   try {
-    const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 1);
+    const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 3);
     await imu.resetSystem();
     // await imu.setAxisMapping({
     //   X: {
