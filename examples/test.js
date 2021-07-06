@@ -2,6 +2,7 @@ const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
 const fs = require('fs');
 
 const offsetsPath = "./offsets.json";
+const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
 
 (async () => {
   try {
@@ -20,10 +21,12 @@ const offsetsPath = "./offsets.json";
       console.log("Done?!");
     }
 
-    const calibrate = async () => {
+    let calibrated = false;
+    while(!calibrated) {
+      await wait(3333);
       console.log('calibration: ', await imu.getCalibrationStatuses());
 
-      const calibrated = await imu.isFullyCalibrated();
+      calibrated = await imu.isFullyCalibrated();
       console.log('is calibrated: ', calibrated);
 
       const offsets = await imu.getSensorOffsets();
@@ -34,13 +37,9 @@ const offsetsPath = "./offsets.json";
         const data = JSON.stringify(offsets);
         fs.writeFileSync(offsetsPath, data);
       }
-      else {
-        setTimeout(calibrate, 3333);
-      }
-    };
-    await calibrate(); 
-    
-    const printData = async () => {
+    }
+
+    while(true) {
       console.log('current mode: ', await imu.getMode());
       console.log('current page: ', await imu.getPage());
       console.log('system status: ', await imu.getSystemStatus());
@@ -54,9 +53,8 @@ const offsetsPath = "./offsets.json";
       console.log('euler: ', await imu.getEuler());
       console.log('quat: ', await imu.getQuat());
 
-      setTimeout(printData, 3333);
-    };
-    await printData();
+      await wait(3333);
+    }
   }
   catch (error) {
     console.error('error: ', error);
