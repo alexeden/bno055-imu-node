@@ -1,23 +1,24 @@
 const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
+const fs = require('fs');
+
+const offsetsPath = "./offsets.json";
 
 (async () => {
   try {
     const imu = await BNO055.begin(DeviceAddress.A, OpMode.FullFusion, 3);
     await imu.resetSystem();
-    // await imu.setAxisMapping({
-    //   X: {
-    //     axis: Axis.X,
-    //     sign: AxisSign.Positive,
-    //   },
-    //   Y: {
-    //     axis: Axis.Z,
-    //     sign: AxisSign.Negative,
-    //   },
-    //   Z: {
-    //     axis: Axis.Y,
-    //     sign: AxisSign.Positive,
-    //   },
-    // });
+
+    if(fs.existsSync(offsetsPath)) {
+      console.log("Reading offsets from disk,", offsetsPath);
+      const data = fs.readFileSync(offsetsPath, {encoding: 'utf8', flag: 'r'});
+
+      const data2 = JSON.parse(data.toString());
+      console.log(data2);
+      
+      console.log("Running setSensorOffsets....");
+      await imu.setSensorOffsets(data2);
+      console.log("Done?!");
+    }
 
     const printEverything = async () => {
 
@@ -34,9 +35,21 @@ const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
       console.log('euler: ', await imu.getEuler());
       console.log('quat: ', await imu.getQuat());
       console.log('calibration: ', await imu.getCalibrationStatuses());
-      console.log('is calibrated: ', await imu.isFullyCalibrated());
-      console.log('offsets: ', await imu.getSensorOffsets());
-      setTimeout(printEverything, 3333);
+
+      const calibrated = await imu.isFullyCalibrated();
+      console.log('is calibrated: ', calibrated);
+
+      const offsets = await imu.getSensorOffsets();
+      console.log('offsets: ', offsets);
+
+      if(calibrated) {
+        console.log("Storing offsets to disk", offsetsPath, offsets);
+        const data = JSON.stringify(offsets);
+        fs.writeFileSync(offsetsPath, data);
+      }
+      else {
+        setTimeout(printEverything, 3333);
+      }
     };
 
     await printEverything();
