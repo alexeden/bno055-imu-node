@@ -1,4 +1,4 @@
-const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../src');
+const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
 
 (async () => {
   try {
