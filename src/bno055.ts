@@ -294,7 +294,7 @@ export class BNO055 {
   /**
    * I2C Helper Methods
    */
-  private async readDoubleByte(reg: number) {
+  private async readDoubleByte(reg: Reg) {
     const [lsb, msb] = await this.readBlock(reg, 2);
 
     return (msb << 8) | lsb;
