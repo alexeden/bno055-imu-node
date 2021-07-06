@@ -160,10 +160,12 @@ export class BNO055 {
     await this.setMode(OpMode.Config);
     await wait(25); // https://github.com/adafruit/Adafruit_BNO055/blob/1c06d4fa6584e7cc688e3f2a496b1385769bc13a/Adafruit_BNO055.cpp#L670
 
+    console.log("1");
     await this.writeDoubleByte(Reg.ACCEL_OFFSET_X_LSB, offsets.accelX);
     await this.writeDoubleByte(Reg.ACCEL_OFFSET_Y_LSB, offsets.accelY);
     await this.writeDoubleByte(Reg.ACCEL_OFFSET_Z_LSB, offsets.accelZ);
 
+    console.log("2");
     await this.writeDoubleByte(Reg.MAG_OFFSET_X_LSB, offsets.magX);
     await this.writeDoubleByte(Reg.MAG_OFFSET_Y_LSB, offsets.magY);
     await this.writeDoubleByte(Reg.MAG_OFFSET_Z_LSB, offsets.magZ);
