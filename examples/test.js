@@ -40,18 +40,11 @@ const wait = (t) => new Promise(ok => setTimeout(ok, t));
     }
 
     while(true) {
-      console.log('current mode: ', await imu.getMode());
-      console.log('current page: ', await imu.getPage());
-      console.log('system status: ', await imu.getSystemStatus());
-      console.log('system error: ', await imu.getSystemError());
-      console.log('temp: ', await imu.getTemperature());
-      console.log('self-test results: ', await imu.getSelfTestResults());
-
       console.log('axis mapping: ', await imu.getAxisMapping());
-      console.log('versions: ', await imu.getVersions());
       console.log('units: ', await imu.getUnits());
       console.log('euler: ', await imu.getEuler());
       console.log('quat: ', await imu.getQuat());
+      console.log('--------------------------------');
 
       await wait(3333);
     }
