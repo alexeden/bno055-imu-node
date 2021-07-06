@@ -160,22 +160,20 @@ export class BNO055 {
     await this.setMode(OpMode.Config);
     await wait(25); // https://github.com/adafruit/Adafruit_BNO055/blob/1c06d4fa6584e7cc688e3f2a496b1385769bc13a/Adafruit_BNO055.cpp#L670
 
-    console.log("1");
-    await this.writeDoubleByte(Reg.ACCEL_OFFSET_X_LSB, offsets.accelX);
-    await this.writeDoubleByte(Reg.ACCEL_OFFSET_Y_LSB, offsets.accelY);
-    await this.writeDoubleByte(Reg.ACCEL_OFFSET_Z_LSB, offsets.accelZ);
+    await this.writeDoubleByte(Reg.ACCEL_OFFSET_X_LSB, Reg.ACCEL_OFFSET_X_MSB, offsets.accelX);
+    await this.writeDoubleByte(Reg.ACCEL_OFFSET_Y_LSB, Reg.ACCEL_OFFSET_Y_MSB, offsets.accelY);
+    await this.writeDoubleByte(Reg.ACCEL_OFFSET_Z_LSB, Reg.ACCEL_OFFSET_Z_MSB, offsets.accelZ);
 
-    console.log("2");
-    await this.writeDoubleByte(Reg.MAG_OFFSET_X_LSB, offsets.magX);
-    await this.writeDoubleByte(Reg.MAG_OFFSET_Y_LSB, offsets.magY);
-    await this.writeDoubleByte(Reg.MAG_OFFSET_Z_LSB, offsets.magZ);
+    await this.writeDoubleByte(Reg.MAG_OFFSET_X_LSB, Reg.MAG_OFFSET_X_MSB, offsets.magX);
+    await this.writeDoubleByte(Reg.MAG_OFFSET_Y_LSB, Reg.MAG_OFFSET_Y_MSB, offsets.magY);
+    await this.writeDoubleByte(Reg.MAG_OFFSET_Z_LSB, Reg.MAG_OFFSET_Z_MSB, offsets.magZ);
 
-    await this.writeDoubleByte(Reg.GYRO_OFFSET_X_LSB, offsets.gyroX);
-    await this.writeDoubleByte(Reg.GYRO_OFFSET_Y_LSB, offsets.gyroY);
-    await this.writeDoubleByte(Reg.GYRO_OFFSET_Z_LSB, offsets.gyroZ);
+    await this.writeDoubleByte(Reg.GYRO_OFFSET_X_LSB, Reg.GYRO_OFFSET_X_MSB,offsets.gyroX);
+    await this.writeDoubleByte(Reg.GYRO_OFFSET_Y_LSB, Reg.GYRO_OFFSET_Y_MSB, offsets.gyroY);
+    await this.writeDoubleByte(Reg.GYRO_OFFSET_Z_LSB, Reg.GYRO_OFFSET_Z_MSB, offsets.gyroZ);
     
-    await this.writeDoubleByte(Reg.ACCEL_RADIUS_LSB, offsets.accelRadius);
-    await this.writeDoubleByte(Reg.MAG_RADIUS_LSB, offsets.magRadius);
+    await this.writeDoubleByte(Reg.ACCEL_RADIUS_LSB, Reg.ACCEL_RADIUS_MSB, offsets.accelRadius);
+    await this.writeDoubleByte(Reg.MAG_RADIUS_LSB, Reg.MAG_RADIUS_MSB, offsets.magRadius);
 
     await this.setMode(savedMode);
   }
@@ -309,9 +307,11 @@ export class BNO055 {
     return buffer;
   }
 
-  private async writeDoubleByte(reg: number, value: number) {
-    const wbuf = Buffer.from([(value >> 8) & 0xFF, value & 0xFF]);
+  private async writeDoubleByte(lsbAddress: Reg, msbAddress: Reg, value: number) {
+    const lsb = value & 0xFF;
+    await this.bus.writeByte(this.address, lsbAddress, lsb);
 
-    await this.bus.i2cWrite(reg, wbuf.length, wbuf);
+    const msb = (value >> 8) & 0xFF;
+    await this.bus.writeByte(this.address, msbAddress, msb);
   }
 }
