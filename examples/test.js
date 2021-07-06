@@ -2,7 +2,7 @@ const { AxisSign, Axis, BNO055, OpMode, DeviceAddress } = require('../dist');
 const fs = require('fs');
 
 const offsetsPath = "./offsets.json";
-const wait = (t: number) => new Promise(ok => setTimeout(ok, t));
+const wait = (t) => new Promise(ok => setTimeout(ok, t));
 
 (async () => {
   try {
