@@ -20,20 +20,7 @@ const offsetsPath = "./offsets.json";
       console.log("Done?!");
     }
 
-    const printEverything = async () => {
-
-      console.log('current mode: ', await imu.getMode());
-      console.log('current page: ', await imu.getPage());
-      console.log('system status: ', await imu.getSystemStatus());
-      console.log('system error: ', await imu.getSystemError());
-      console.log('temp: ', await imu.getTemperature());
-      console.log('self-test results: ', await imu.getSelfTestResults());
-
-      console.log('axis mapping: ', await imu.getAxisMapping());
-      console.log('versions: ', await imu.getVersions());
-      console.log('units: ', await imu.getUnits());
-      console.log('euler: ', await imu.getEuler());
-      console.log('quat: ', await imu.getQuat());
+    const calibrate = async () => {
       console.log('calibration: ', await imu.getCalibrationStatuses());
 
       const calibrated = await imu.isFullyCalibrated();
@@ -48,12 +35,28 @@ const offsetsPath = "./offsets.json";
         fs.writeFileSync(offsetsPath, data);
       }
       else {
-        setTimeout(printEverything, 3333);
+        setTimeout(calibrate, 3333);
       }
     };
+    await calibrate(); 
+    
+    const printData = async () => {
+      console.log('current mode: ', await imu.getMode());
+      console.log('current page: ', await imu.getPage());
+      console.log('system status: ', await imu.getSystemStatus());
+      console.log('system error: ', await imu.getSystemError());
+      console.log('temp: ', await imu.getTemperature());
+      console.log('self-test results: ', await imu.getSelfTestResults());
 
-    await printEverything();
+      console.log('axis mapping: ', await imu.getAxisMapping());
+      console.log('versions: ', await imu.getVersions());
+      console.log('units: ', await imu.getUnits());
+      console.log('euler: ', await imu.getEuler());
+      console.log('quat: ', await imu.getQuat());
 
+      setTimeout(printData, 3333);
+    };
+    await printData();
   }
   catch (error) {
     console.error('error: ', error);
