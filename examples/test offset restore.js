@@ -40,10 +40,10 @@ const wait = (t) => new Promise(ok => setTimeout(ok, t));
     }
 
     while(true) {
-      console.log('axis mapping: ', await imu.getAxisMapping());
-      console.log('units: ', await imu.getUnits());
       console.log('euler: ', await imu.getEuler());
       console.log('quat: ', await imu.getQuat());
+      console.log('temp', await imu.getTemperature());
+      console.log('units', await imu.getUnits());
       console.log('--------------------------------');
 
       await wait(3333);
