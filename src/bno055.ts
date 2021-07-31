@@ -155,7 +155,7 @@ export class BNO055 {
     }
   }
 
-  async setSensorOffsets(offsets : Offsets) {
+  async setSensorOffsets(offsets: Offsets) {
     const savedMode = this.mode;
     await this.setMode(OpMode.Config);
     await wait(25); // https://github.com/adafruit/Adafruit_BNO055/blob/1c06d4fa6584e7cc688e3f2a496b1385769bc13a/Adafruit_BNO055.cpp#L727
@@ -171,7 +171,7 @@ export class BNO055 {
     await this.writeDoubleByte(Reg.GYRO_OFFSET_X_LSB, Reg.GYRO_OFFSET_X_MSB, offsets.gyroX);
     await this.writeDoubleByte(Reg.GYRO_OFFSET_Y_LSB, Reg.GYRO_OFFSET_Y_MSB, offsets.gyroY);
     await this.writeDoubleByte(Reg.GYRO_OFFSET_Z_LSB, Reg.GYRO_OFFSET_Z_MSB, offsets.gyroZ);
-    
+
     await this.writeDoubleByte(Reg.ACCEL_RADIUS_LSB, Reg.ACCEL_RADIUS_MSB, offsets.accelRadius);
     await this.writeDoubleByte(Reg.MAG_RADIUS_LSB, Reg.MAG_RADIUS_MSB, offsets.magRadius);
 
